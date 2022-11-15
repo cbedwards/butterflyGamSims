@@ -41,8 +41,7 @@ In combination, the following functions simulate a time series:
 
 #### Function to generate yearly population abundance index
 
-`abund_generator.R` contains two functions for this, which need roxygen2
-documentation.
+`abund_generator.R` contains two functions for this.
 
 #### Function to generate activity curve in each year
 

@@ -1,4 +1,27 @@
-
+#' Determine yearly abundance index
+#'
+#' From a sequence of years, generates abundance indices to feed into [activity_generator()].
+#' Currently two methods are implemented. `abund_generator_exp()` produces deterministic
+#' exponential decline or growth from an initial abundnace. `abund_generator_rlnorm()` produces
+#' abundances from a lognormal distribution.
+#'
+#'
+#' @param years Years to generate abundance index for as a numeric vector.
+#' For `abund_generator_exp()`, exponential growth/decline occurs between years,
+#' so c(1,2,10) will give different results than c(1,2,3). For `abund_generator_rlnorm()`,
+#' each year's value is IID.
+#' @param ... For `abund_generator_exp()`, needs `growth.rate` (yearly population growth rate) and `init.size` (abundance index in the first year).
+#' For our purposes, recommend a negative growth rate. For `abund_generator.rlnorm`,
+#' needs `meanlog` and `sdlog`, the mean and standard deviation of the normal distribution on a log scale.
+#'
+#' @return Numeric vector of abundance indices for each year.
+#' @export
+#'
+#' @examples
+#' out = abund_generator_exp(years = 1:10, growth.rate = -0.1, init.size=500)
+#' plot(x = 1:10, y = out)
+#' out = abund_generator_rlnorm(years = 1:10, meanlog = 6, sdlog = 2)
+#' plot(x = 1:10, y = out)
 abund_generator_exp = function(years, ...){
   parms.opt = list(...)
   stopifnot(is.numeric(years))
@@ -7,10 +30,10 @@ abund_generator_exp = function(years, ...){
    parms.opt$init.size * exp(parms.opt$growth.rate *(years-min(years)))
 }
 
-abund_generator_exp(years = 1:10,
-                    growth.rate = 0,
-                    init.size=50)
 
+
+#' @rdname abund_generator_exp
+#' @export
 abund_generator_rlnorm = function(years, ...){
   parms.opt = list(...)
   stopifnot(is.numeric(years))
