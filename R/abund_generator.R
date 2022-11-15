@@ -1,6 +1,6 @@
 #' Determine yearly abundance index
 #'
-#' From a sequence of years, generates abundance indices to feed into [activity_generator()].
+#' From a sequence of years, generates abundance indices to feed into activity_generator().
 #' Currently two methods are implemented. `abund_generator_exp()` produces deterministic
 #' exponential decline or growth from an initial abundnace. `abund_generator_rlnorm()` produces
 #' abundances from a lognormal distribution.
@@ -39,5 +39,5 @@ abund_generator_rlnorm = function(years, ...){
   stopifnot(is.numeric(years))
   stopifnot("meanlog" %in% names(parms.opt),
             "sdlog" %in% names(parms.opt))
-  rlnorm(length(years), parms.opt$meanlog, parms.opt$sdlog)
+  stats::rlnorm(length(years), parms.opt$meanlog, parms.opt$sdlog)
 }

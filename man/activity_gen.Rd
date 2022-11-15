@@ -2,18 +2,29 @@
 % Please edit documentation in R/activity_generator.R
 \name{activity_gen}
 \alias{activity_gen}
+\alias{activity_gen_zon}
+\alias{activity_gen_gaus}
+\alias{activity_gen_bivoltine}
 \title{Determine expected activity}
 \usage{
 activity_gen(abund.vec, doy, activity.type, ...)
+
+activity_gen_zon(abund.vec, doy, ...)
+
+activity_gen_gaus(abund.vec, doy, ...)
+
+activity_gen_bivoltine(abund.vec, doy, ...)
 }
 \arguments{
 \item{abund.vec}{vector of abundance index associated with the year of each sampling event.
-Can generate with \code{\link[=abund_generator]{abund_generator()}}, note that it must be the same length as argument \code{doy}}
+Can generate with \code{abund_generator()}, note that it must be the same length as argument \code{doy}}
 
 \item{doy}{day of year of each sampling event}
 
-\item{activity.type}{What type activity curve to model? Currently supports the Zonneveld model ("Zonneveld"),
-a simple gaussian activity curve ("Gauss"), and a bivoltine activity curve based on two Gaussian curves ("bivoltine").}
+\item{activity.type}{What type activity curve to model? Currently supports the
+Zonneveld model ("Zonneveld"),
+a simple gaussian activity curve ("Gauss"), and a bivoltine activity curve based
+on two Gaussian curves ("bivoltine").}
 
 \item{...}{further arguments passed to the activity curves. See details.}
 }
@@ -22,8 +33,10 @@ Numeric vector of expected activity for each observation event.
 }
 \description{
 For a series of observation events defined by the abundance in that year and the doy of that
-observation event, calculate the expected value of the activity curve. Combine with activity_sampler to genate
-actual simulated counts
+observation event, calculate the expected value of the activity curve. Combine with
+\code{activity_sampler()} to generate
+actual simulated counts. \code{activity_gen()} is the main function, which in turn can call
+functions for specific types of activity curves.
 }
 \details{
 For the Gaussian distribution, the additional parameters are \code{act.mean} and \code{act.sd},
@@ -38,8 +51,10 @@ second peak has half the size of the first, \code{rel.size = 10} means the secon
 not change the overall abundance.
 
 For the Zonneveld model,
-peak emergence time (theta), spread in emerge times (beta), and death rate (alpha). These parameters
-and the activity curve are taken from Zonneveld et al. 2003. For normal use of htis model,
+peak emergence time (theta), spread in emerge times (beta), and death rate (alpha).
+These parameters
+and the activity curve are taken from Zonneveld et al. 2003. For normal use of this
+model,
 we would have to define initial number of larvae eclosing. However, here we set it such
 that the resulting abundance index equals the provided abundance index.
 Since area under curve = N / alpha, we set N = abundance index * alpha.
@@ -50,19 +65,22 @@ library(tidyverse)
 dat = expand.grid(years = seq(1:10),
                   doy = seq(100,150, by = 7))
 abund.merge = data.frame(years = unique(dat$years),
-                         abund = abund_generator_exp(unique(dat$years), growth.rate = -0.1, init.size=500)
+                         abund = abund_generator_exp(unique(dat$years),
+                         growth.rate = -0.1, init.size=500)
 )
 dat = merge(dat, abund.merge)
-dat$proj = activity_gen_gaus(abund.vec = dat$abund,
+dat$proj = activity_gen(abund.vec = dat$abund,
                              doy = dat$doy,
+                             activity.type = "Gauss",
                              act.mean = 130,
                              act.sd = 10)
 
 dat.detail = expand.grid(years = unique(dat$years),
                          doy = seq(50,250, by = .1))
 dat.detail = merge(dat.detail, abund.merge)
-dat.detail$proj = activity_gen_gaus(abund.vec = dat.detail$abund,
+dat.detail$proj = activity_gen(abund.vec = dat.detail$abund,
                                     doy = dat.detail$doy,
+                                    activity.type = "Gauss",
                                     act.mean = 130,
                                     act.sd = 10)
 
@@ -71,12 +89,13 @@ ggplot(data = dat, aes(x = doy, y = proj))+
   geom_line(data = dat.detail, aes(x = doy, y = proj))+
   facet_wrap(~years)
 
-  Replicating figure 1a from Zonneveld et al. 2003
+  #Replicating figure 1a from Zonneveld et al. 2003
   dat.test = data.frame(doy = seq(0,50, by =.1))
-dat.test$abund = 55.1/parms.opt$alpha
+dat.test$abund = 55.1/0.096
 
-dat.test$act = activity_gen_zon(abund.vec = dat.test$abund,
+dat.test$act = activity_gen(abund.vec = dat.test$abund,
                                 doy = dat.test$doy,
+                                activity.type = "Zonneveld",
                                 theta = 11.1,
                                 beta = 2.7,
                                 alpha = 0.096)

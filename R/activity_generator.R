@@ -1,18 +1,24 @@
 #' Determine expected activity
 #'
 #' For a series of observation events defined by the abundance in that year and the doy of that
-#' observation event, calculate the expected value of the activity curve. Combine with activity_sampler to genate
-#' actual simulated counts
+#' observation event, calculate the expected value of the activity curve. Combine with
+#' `activity_sampler()` to generate
+#' actual simulated counts. `activity_gen()` is the main function, which in turn can call
+#' functions for specific types of activity curves.
 #'
 #' @param abund.vec vector of abundance index associated with the year of each sampling event.
-#' Can generate with [abund_generator()], note that it must be the same length as argument `doy`
+#' Can generate with `abund_generator()`, note that it must be the same length as argument `doy`
 #' @param doy day of year of each sampling event
-#' @param activity.type What type activity curve to model? Currently supports the Zonneveld model ("Zonneveld"),
-#' a simple gaussian activity curve ("Gauss"), and a bivoltine activity curve based on two Gaussian curves ("bivoltine").
+#' @param activity.type What type activity curve to model? Currently supports the
+#' Zonneveld model ("Zonneveld"),
+#' a simple gaussian activity curve ("Gauss"), and a bivoltine activity curve based
+#' on two Gaussian curves ("bivoltine").
 #' @param ... further arguments passed to the activity curves. See details.
 #'
 #' @return Numeric vector of expected activity for each observation event.
 #' @export
+#'
+#' @import deSolve
 #'
 #' @details For the Gaussian distribution, the additional parameters are `act.mean` and `act.sd`,
 #' defining the mean and standard deviation of the associated Guassian distribution.
@@ -26,8 +32,10 @@
 #' not change the overall abundance.
 #'
 #' For the Zonneveld model,
-#' peak emergence time (theta), spread in emerge times (beta), and death rate (alpha). These parameters
-#' and the activity curve are taken from Zonneveld et al. 2003. For normal use of htis model,
+#' peak emergence time (theta), spread in emerge times (beta), and death rate (alpha).
+#' These parameters
+#' and the activity curve are taken from Zonneveld et al. 2003. For normal use of this
+#' model,
 #'  we would have to define initial number of larvae eclosing. However, here we set it such
 #'  that the resulting abundance index equals the provided abundance index.
 #'  Since area under curve = N / alpha, we set N = abundance index * alpha.
@@ -39,7 +47,8 @@
 #' dat = expand.grid(years = seq(1:10),
 #'                   doy = seq(100,150, by = 7))
 #' abund.merge = data.frame(years = unique(dat$years),
-#'                          abund = abund_generator_exp(unique(dat$years), growth.rate = -0.1, init.size=500)
+#'                          abund = abund_generator_exp(unique(dat$years),
+#'                          growth.rate = -0.1, init.size=500)
 #' )
 #' dat = merge(dat, abund.merge)
 #' dat$proj = activity_gen(abund.vec = dat$abund,
@@ -62,9 +71,9 @@
 #'   geom_line(data = dat.detail, aes(x = doy, y = proj))+
 #'   facet_wrap(~years)
 #'
-#'   Replicating figure 1a from Zonneveld et al. 2003
+#'   #Replicating figure 1a from Zonneveld et al. 2003
 #'   dat.test = data.frame(doy = seq(0,50, by =.1))
-#' dat.test$abund = 55.1/parms.opt$alpha
+#' dat.test$abund = 55.1/0.096
 #'
 #' dat.test$act = activity_gen(abund.vec = dat.test$abund,
 #'                                 doy = dat.test$doy,
@@ -82,9 +91,9 @@ activity_gen = function(abund.vec,
             length(abund.vec)==length(doy),
             activity.type %in% c("Zonneveld", "Gauss", "bivoltine"))
   switch(activity.type,
-         Zonneveld = activity_gen_zon(abund.vec, ...),
-         Gauss = activity_gen_gaus(abund.vec, ...),
-         bivoltine = activity_gen_bivoltine(abund.vec, ...))
+         Zonneveld = activity_gen_zon(abund.vec, doy, ...),
+         Gauss = activity_gen_gaus(abund.vec, doy, ...),
+         bivoltine = activity_gen_bivoltine(abund.vec, doy, ...))
 }
 
 ## helper function for zonneveld model
@@ -100,7 +109,11 @@ zon_fun=function(t,y,parms) {
   dY=dx;
   return(list(dY));
 }
+
+#' @rdname activity_gen
+#' @export
 activity_gen_zon = function(abund.vec, doy, ...){
+  library(deSolve)
   parms.opt = list(...)
   stopifnot("theta" %in% names(parms.opt),
             "beta" %in% names(parms.opt),
@@ -112,7 +125,7 @@ activity_gen_zon = function(abund.vec, doy, ...){
   ## we need to streamline for odesolver, then merge back in and account for abund.vec
   doy.use = sort(unique(doy))
   parms.opt$N = 100*parms.opt$alpha #increasing by 100 for numerics reasons
-  out.lsoda = data.frame(lsoda(0, c(0, doy.use), zon_fun, parms.opt)[-1,])
+  out.lsoda = data.frame(deSolve::lsoda(0, c(0, doy.use), zon_fun, parms.opt)[-1,])
   names(out.lsoda) = c("doy", "act.raw")
   dat.sub = data.frame(abund = abund.vec, doy = doy)
   dat.sub = merge(dat.sub, out.lsoda)
@@ -120,25 +133,29 @@ activity_gen_zon = function(abund.vec, doy, ...){
   return(dat.sub$act)
 }
 
+#' @rdname activity_gen
+#' @export
 activity_gen_gaus = function(abund.vec, doy, ...){
   parms.opt = list(...)
   stopifnot("act.mean" %in% names(parms.opt),
             "act.sd" %in% names(parms.opt))
-  abund.vec * dnorm(doy,  mean = parms.opt$act.mean,  sd = parms.opt$act.sd)
+  abund.vec * stats::dnorm(doy,  mean = parms.opt$act.mean,  sd = parms.opt$act.sd)
 }
 
-activity_gen_bivoltinefunction = function(abund.vec, doy, ...){
+#' @rdname activity_gen
+#' @export
+activity_gen_bivoltine = function(abund.vec, doy, ...){
   parms.opt = list(...)
   stopifnot("act.mean1" %in% names(parms.opt),
             "act.sd1" %in% names(parms.opt),
             "act.mean2" %in% names(parms.opt),
             "act.sd2" %in% names(parms.opt),
             "rel.size2" %in% names(parms.opt),
-            rel.size2>0
+            parms.opt$rel.size2>0
   )
-  abund.vec * 1/(1+rel.size2) *
-    (dnorm(doy,  mean = parms.opt$act.mean1,  sd = parms.opt$act.sd1) +
-       rel.size2 * dnorm(doy,  mean = parms.opt$act.mean2,  sd = parms.opt$act.sd2)
+  abund.vec * 1/(1+parms.opt$rel.size2) *
+    (stats::dnorm(doy,  mean = parms.opt$act.mean1,  sd = parms.opt$act.sd1) +
+       parms.opt$rel.size2 * stats::dnorm(parms.opt$doy,  mean = parms.opt$act.mean2,  sd = parms.opt$act.sd2)
     )
 }
 

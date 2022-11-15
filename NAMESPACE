@@ -3,4 +3,8 @@
 export(abund_generator_exp)
 export(abund_generator_rlnorm)
 export(activity_gen)
+export(activity_gen_bivoltine)
+export(activity_gen_gaus)
+export(activity_gen_zon)
 export(gam_summarizer)
+import(deSolve)

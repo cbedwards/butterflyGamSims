@@ -23,7 +23,7 @@ needs \code{meanlog} and \code{sdlog}, the mean and standard deviation of the no
 Numeric vector of abundance indices for each year.
 }
 \description{
-From a sequence of years, generates abundance indices to feed into \code{\link[=activity_generator]{activity_generator()}}.
+From a sequence of years, generates abundance indices to feed into activity_generator().
 Currently two methods are implemented. \code{abund_generator_exp()} produces deterministic
 exponential decline or growth from an initial abundnace. \code{abund_generator_rlnorm()} produces
 abundances from a lognormal distribution.
