@@ -21,7 +21,7 @@
 #' timeseries_examples(years = 1990:2000,
 #'   doy.samples = seq(105,160, by = 7),
 #'   abund.type = "exp",
-#'   activity.type = "Gauss",
+#'   activity.type = "gauss",
 #'   sample.type = "pois",
 #'   growth.rate = -0.12,
 #'   init.size = 500,
@@ -69,7 +69,7 @@ timeseries_examples = function(years,
 #' timeseries_generator(years = 1990:2000,
 #'   doy.samples = seq(105,160, by = 7),
 #'   abund.type = "exp",
-#'   activity.type = "Gauss",
+#'   activity.type = "gauss",
 #'   sample.type = "pois",
 #'   growth.rate = -0.12,
 #'   init.size = 500,
@@ -96,5 +96,12 @@ timeseries_generator = function(years,
   dat$count = activity_sampler(dat$act,
                                sample.type,
                                ...)
+  names(dat)[names(dat) == "abund"] = "abund.true"
+  truepheno = timeseries_truepheno(activity.type,...)
+  dat$onset.true = truepheno$onset
+  dat$median.true = truepheno$median
+  dat$end.true = truepheno$end
+  dat$fp.true = truepheno$fp
+  dat = dat[order(dat$years),]
   return(dat)
 }

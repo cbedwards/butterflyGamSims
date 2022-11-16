@@ -23,9 +23,9 @@ timeseries_examples(
 exponential growth (\code{"exp"}), log normal variation (\code{"rlnorm"}).}
 
 \item{activity.type}{What type activity curve to model? Currently supports the
-Zonneveld model ("Zonneveld"),
-a simple gaussian activity curve ("Gauss"), and a bivoltine activity curve based
-on two Gaussian curves ("bivoltine").}
+Zonneveld model (\code{"zon"}),
+a simple gaussian activity curve (\code{"gauss"}), and a bivoltine activity curve based
+on two Gaussian curves (\code{"bivolt"}).}
 
 \item{sample.type}{Name of sampling distribution. Currently supported: Poisson (\code{"pois"}),
 negative binomial (\code{"nb"}), and zero-inflated negative binomial (\code{"zinb"}). "nb" and "zinb"
@@ -50,7 +50,7 @@ possible to import details from multiple functions.
 timeseries_examples(years = 1990:2000,
   doy.samples = seq(105,160, by = 7),
   abund.type = "exp",
-  activity.type = "Gauss",
+  activity.type = "gauss",
   sample.type = "pois",
   growth.rate = -0.12,
   init.size = 500,

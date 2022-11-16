@@ -47,11 +47,22 @@ In combination, the following functions simulate a time series:
 
 #### Function to generate activity curve in each year
 
+`activity_gen()`
+
 #### Function to sample activity curve in each year
+
+`activity_sampler()`
 
 #### Function to calc actual pheno + abund metrics for each year from activity curve
 
-Notes: uses parameters for “sampling design”
+`gam_summarizer` feeds into `timeseries_truepheno`, which feeds into
+`timeseries_generator`. The end result is that `timeseries_generator`
+provides the “correct” answers for abundance index (not accounting for
+0s when using `sample.type="zinb"`) and phenology metrics.
+
+#### Function to plot example time series
+
+`timeseries_example`.
 
 ### Analysis
 
@@ -74,6 +85,8 @@ diagnostics in the form of `boundary.reasonable.rel` and
 Note: here we want to be able to try several criterion for avoiding
 bias, including excluding some site-years for phenology trends based on
 number of non-zero observations.
+
+#### function to integrate the above for a given timeseries
 
 ### Simulating
 

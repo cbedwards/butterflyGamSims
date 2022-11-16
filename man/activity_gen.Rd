@@ -4,7 +4,7 @@
 \alias{activity_gen}
 \alias{activity_gen_zon}
 \alias{activity_gen_gaus}
-\alias{activity_gen_bivoltine}
+\alias{activity_gen_bivolt}
 \title{Determine expected activity}
 \usage{
 activity_gen(abund.vec, doy, activity.type, ...)
@@ -13,7 +13,7 @@ activity_gen_zon(abund.vec, doy, ...)
 
 activity_gen_gaus(abund.vec, doy, ...)
 
-activity_gen_bivoltine(abund.vec, doy, ...)
+activity_gen_bivolt(abund.vec, doy, ...)
 }
 \arguments{
 \item{abund.vec}{vector of abundance index associated with the year of each sampling event.
@@ -22,9 +22,9 @@ Can generate with \code{abund_generator()}, note that it must be the same length
 \item{doy}{day of year of each sampling event}
 
 \item{activity.type}{What type activity curve to model? Currently supports the
-Zonneveld model ("Zonneveld"),
-a simple gaussian activity curve ("Gauss"), and a bivoltine activity curve based
-on two Gaussian curves ("bivoltine").}
+Zonneveld model (\code{"zon"}),
+a simple gaussian activity curve (\code{"gauss"}), and a bivoltine activity curve based
+on two Gaussian curves (\code{"bivolt"}).}
 
 \item{...}{further arguments passed to the activity curves. See details.}
 }
@@ -72,7 +72,7 @@ abund.merge = data.frame(years = unique(dat$years),
 dat = merge(dat, abund.merge)
 dat$proj = activity_gen(abund.vec = dat$abund,
                              doy = dat$doy,
-                             activity.type = "Gauss",
+                             activity.type = "gauss",
                              act.mean = 130,
                              act.sd = 10)
 
@@ -81,7 +81,7 @@ dat.detail = expand.grid(years = unique(dat$years),
 dat.detail = merge(dat.detail, abund.merge)
 dat.detail$proj = activity_gen(abund.vec = dat.detail$abund,
                                     doy = dat.detail$doy,
-                                    activity.type = "Gauss",
+                                    activity.type = "gauss",
                                     act.mean = 130,
                                     act.sd = 10)
 
@@ -96,7 +96,7 @@ dat.test$abund = 55.1/0.096
 
 dat.test$act = activity_gen(abund.vec = dat.test$abund,
                                 doy = dat.test$doy,
-                                activity.type = "Zonneveld",
+                                activity.type = "zon",
                                 zon.theta = 11.1,
                                 beta = 2.7,
                                 alpha = 0.096)

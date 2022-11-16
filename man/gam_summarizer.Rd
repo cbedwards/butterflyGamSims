@@ -25,7 +25,7 @@ Defaults to 1 and 364.}
 \item{bounds.thresh.abs}{When the activity should be 0, what is "close enough" in absolute terms (for cases with flat activity)}
 }
 \value{
-Returns frame with summary information. \code{abund} = abundance index, \code{med} = median,
+Returns frame with summary information. \code{abund} = abundance index, \code{median} = median,
 \code{onset} = 0.1 quantile, \code{end} = 0.9 quantile, \code{fp} = flight period (days between 0.9 and 0.1 quantile).
 \code{boundary.reasonable.rel} and \code{boundary.reasonable.abs} will be true if all the provided \code{bounds.reasonable} values
 are "sufficiently small" as defined by \code{bounds.thresh.rel} and \code{bounds.thresh.abs}, respectively. See "Details" for more... details.

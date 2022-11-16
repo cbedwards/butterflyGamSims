@@ -18,7 +18,7 @@
 #' a vector with additional days can be added if that is desired
 #' (ie for bivoltine species with a known period of no abundance between peaks).
 #'
-#' @return Returns frame with summary information. `abund` = abundance index, `med` = median,
+#' @return Returns frame with summary information. `abund` = abundance index, `median` = median,
 #' `onset` = 0.1 quantile, `end` = 0.9 quantile, `fp` = flight period (days between 0.9 and 0.1 quantile).
 #' `boundary.reasonable.rel` and `boundary.reasonable.abs` will be true if all the provided `bounds.reasonable` values
 #' are "sufficiently small" as defined by `bounds.thresh.rel` and `bounds.thresh.abs`, respectively. See "Details" for more... details.
@@ -70,7 +70,7 @@ gam_summarizer=function(count.pred,
   # first calulate the cumulative distribution function
   cdf = cumsum(count.pred)/sum(count.pred)
   res.cur$onset = doy.pred[min(which(cdf>=0.1))]
-  res.cur$med = doy.pred[min(which(cdf>=0.5))]
+  res.cur$median = doy.pred[min(which(cdf>=0.5))]
   res.cur$end = doy.pred[min(which(cdf>=0.9))]
   res.cur$fp = res.cur$end - res.cur$onset
 

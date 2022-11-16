@@ -55,7 +55,7 @@ abund.merge = data.frame(years = unique(dat$years),
 dat = merge(dat, abund.merge)
 dat$act = activity_gen(abund.vec = dat$abund,
                       doy = dat$doy,
-                      activity.type = "Gauss",
+                      activity.type = "gauss",
                       act.mean = 130,
                       act.sd = 10)
 dat$count = activity_sampler(dat$act,
@@ -66,7 +66,7 @@ dat.detail = expand.grid(years = unique(dat$years),
 dat.detail = merge(dat.detail, abund.merge)
 dat.detail$act = activity_gen(abund.vec = dat.detail$abund,
                              doy = dat.detail$doy,
-                             activity.type = "Gauss",
+                             activity.type = "gauss",
                              act.mean = 130,
                              act.sd = 10)
 

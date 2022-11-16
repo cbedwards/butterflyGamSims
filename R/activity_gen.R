@@ -10,9 +10,9 @@
 #' Can generate with `abund_generator()`, note that it must be the same length as argument `doy`
 #' @param doy day of year of each sampling event
 #' @param activity.type What type activity curve to model? Currently supports the
-#' Zonneveld model ("Zonneveld"),
-#' a simple gaussian activity curve ("Gauss"), and a bivoltine activity curve based
-#' on two Gaussian curves ("bivoltine").
+#' Zonneveld model (`"zon"`),
+#' a simple gaussian activity curve (`"gauss"`), and a bivoltine activity curve based
+#' on two Gaussian curves (`"bivolt"`).
 #' @param ... further arguments passed to the activity curves. See details.
 #'
 #' @return Numeric vector of expected activity for each observation event.
@@ -54,7 +54,7 @@
 #' dat = merge(dat, abund.merge)
 #' dat$proj = activity_gen(abund.vec = dat$abund,
 #'                              doy = dat$doy,
-#'                              activity.type = "Gauss",
+#'                              activity.type = "gauss",
 #'                              act.mean = 130,
 #'                              act.sd = 10)
 #'
@@ -63,7 +63,7 @@
 #' dat.detail = merge(dat.detail, abund.merge)
 #' dat.detail$proj = activity_gen(abund.vec = dat.detail$abund,
 #'                                     doy = dat.detail$doy,
-#'                                     activity.type = "Gauss",
+#'                                     activity.type = "gauss",
 #'                                     act.mean = 130,
 #'                                     act.sd = 10)
 #'
@@ -78,7 +78,7 @@
 #'
 #' dat.test$act = activity_gen(abund.vec = dat.test$abund,
 #'                                 doy = dat.test$doy,
-#'                                 activity.type = "Zonneveld",
+#'                                 activity.type = "zon",
 #'                                 zon.theta = 11.1,
 #'                                 beta = 2.7,
 #'                                 alpha = 0.096)
@@ -90,11 +90,11 @@ activity_gen = function(abund.vec,
   stopifnot(is.numeric(abund.vec),
             is.numeric(doy),
             length(abund.vec)==length(doy),
-            activity.type %in% c("Zonneveld", "Gauss", "bivoltine"))
+            activity.type %in% c("zon", "gauss", "bivolt"))
   switch(activity.type,
-         Zonneveld = activity_gen_zon(abund.vec, doy, ...),
-         Gauss = activity_gen_gaus(abund.vec, doy, ...),
-         bivoltine = activity_gen_bivoltine(abund.vec, doy, ...))
+         zon = activity_gen_zon(abund.vec, doy, ...),
+         gauss = activity_gen_gaus(abund.vec, doy, ...),
+         bivolt = activity_gen_bivolt(abund.vec, doy, ...))
 }
 
 ## helper function for zonneveld model
@@ -142,7 +142,7 @@ activity_gen_gaus = function(abund.vec, doy, ...){
 }
 
 #' @rdname activity_gen
-activity_gen_bivoltine = function(abund.vec, doy, ...){
+activity_gen_bivolt = function(abund.vec, doy, ...){
   parms.opt = list(...)
   stopifnot("act.mean1" %in% names(parms.opt),
             "act.sd1" %in% names(parms.opt),
