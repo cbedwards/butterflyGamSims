@@ -32,7 +32,7 @@
 #' not change the overall abundance.
 #'
 #' For the Zonneveld model,
-#' peak emergence time (theta), spread in emerge times (beta), and death rate (alpha).
+#' peak emergence time (`zon.theta`), spread in emerge times (`beta`), and death rate (`alpha`).
 #' These parameters
 #' and the activity curve are taken from Zonneveld et al. 2003. For normal use of this
 #' model,
@@ -47,7 +47,8 @@
 #' dat = expand.grid(years = seq(1:10),
 #'                   doy = seq(100,150, by = 7))
 #' abund.merge = data.frame(years = unique(dat$years),
-#'                          abund = abund_generator_exp(unique(dat$years),
+#'                          abund = abund_generator(unique(dat$years),
+#'                          abund.type = "exp",
 #'                          growth.rate = -0.1, init.size=500)
 #' )
 #' dat = merge(dat, abund.merge)
@@ -66,10 +67,10 @@
 #'                                     act.mean = 130,
 #'                                     act.sd = 10)
 #'
-#' ggplot(data = dat, aes(x = doy, y = proj))+
-#'   geom_point()+
-#'   geom_line(data = dat.detail, aes(x = doy, y = proj))+
-#'   facet_wrap(~years)
+#' #ggplot(data = dat, aes(x = doy, y = proj))+
+#' #   geom_point()+
+#' #   geom_line(data = dat.detail, aes(x = doy, y = proj))+
+#' #   facet_wrap(~years)
 #'
 #'   #Replicating figure 1a from Zonneveld et al. 2003
 #'   dat.test = data.frame(doy = seq(0,50, by =.1))
@@ -78,7 +79,7 @@
 #' dat.test$act = activity_gen(abund.vec = dat.test$abund,
 #'                                 doy = dat.test$doy,
 #'                                 activity.type = "Zonneveld",
-#'                                 theta = 11.1,
+#'                                 zon.theta = 11.1,
 #'                                 beta = 2.7,
 #'                                 alpha = 0.096)
 #' plot(dat.test$doy, dat.test$act, type='l')
@@ -102,39 +103,37 @@ zon_fun=function(t,y,parms) {
   #state variables:
   x=y[1]
   # Parameters:
-  N=parms$N; beta=parms$beta; theta = parms$theta; alpha = parms$alpha
+  N=parms$N; beta=parms$beta; zon.theta = parms$zon.theta; alpha = parms$alpha
   # Model:
-  b = exp((t-theta)/beta)
+  b = exp((t-zon.theta)/beta)
   dx=N * b / (beta * (1 + b)^2) - alpha * x
   dY=dx;
   return(list(dY));
 }
 
 #' @rdname activity_gen
-#' @export
 activity_gen_zon = function(abund.vec, doy, ...){
-  library(deSolve)
+  # library(deSolve)
   parms.opt = list(...)
-  stopifnot("theta" %in% names(parms.opt),
+  stopifnot("zon.theta" %in% names(parms.opt),
             "beta" %in% names(parms.opt),
             "alpha" %in% names(parms.opt))
-  stopifnot(parms.opt$theta>0,
+  stopifnot(parms.opt$zon.theta>0,
             parms.opt$beta>0,
             parms.opt$alpha>=0
   )
   ## we need to streamline for odesolver, then merge back in and account for abund.vec
+  dat.sub = data.frame(abund = abund.vec, doy = doy)
   doy.use = sort(unique(doy))
   parms.opt$N = 100*parms.opt$alpha #increasing by 100 for numerics reasons
   out.lsoda = data.frame(deSolve::lsoda(0, c(0, doy.use), zon_fun, parms.opt)[-1,])
   names(out.lsoda) = c("doy", "act.raw")
-  dat.sub = data.frame(abund = abund.vec, doy = doy)
-  dat.sub = merge(dat.sub, out.lsoda)
+  dat.sub = dplyr::left_join(dat.sub, out.lsoda, by = "doy")
   dat.sub$act = dat.sub$act.raw / 100 * dat.sub$abund ## canceling out the 100 from above
-  return(dat.sub$act)
+  return(dat.sub$act.raw)
 }
 
 #' @rdname activity_gen
-#' @export
 activity_gen_gaus = function(abund.vec, doy, ...){
   parms.opt = list(...)
   stopifnot("act.mean" %in% names(parms.opt),
@@ -143,7 +142,6 @@ activity_gen_gaus = function(abund.vec, doy, ...){
 }
 
 #' @rdname activity_gen
-#' @export
 activity_gen_bivoltine = function(abund.vec, doy, ...){
   parms.opt = list(...)
   stopifnot("act.mean1" %in% names(parms.opt),
@@ -155,7 +153,7 @@ activity_gen_bivoltine = function(abund.vec, doy, ...){
   )
   abund.vec * 1/(1+parms.opt$rel.size2) *
     (stats::dnorm(doy,  mean = parms.opt$act.mean1,  sd = parms.opt$act.sd1) +
-       parms.opt$rel.size2 * stats::dnorm(parms.opt$doy,  mean = parms.opt$act.mean2,  sd = parms.opt$act.sd2)
+       parms.opt$rel.size2 * stats::dnorm(doy,  mean = parms.opt$act.mean2,  sd = parms.opt$act.sd2)
     )
 }
 

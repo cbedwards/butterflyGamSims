@@ -47,6 +47,8 @@ In combination, the following functions simulate a time series:
 
 #### Function to sample activity curve in each year
 
+#### Function to calc actual pheno + abund metrics for each year from activity curve
+
 Notes: uses parameters for “sampling design”
 
 ### Analysis

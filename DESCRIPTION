@@ -13,8 +13,10 @@ URL: https://github.com/cbedwards/butterflyGamSims
 BugReports: https://github.com/cbedwards/butterflyGamSims/issues
 Suggests: 
     testthat (>= 3.0.0),
-    ggplot2,
     tidyverse
 Config/testthat/edition: 3
 Imports: 
-    deSolve
+    deSolve,
+    dplyr,
+    ggplot2,
+    MASS

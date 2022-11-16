@@ -30,6 +30,7 @@ You can install the development version of butterflyGamSims from [GitHub](https:
 devtools::install_github("cbedwards/butterflyGamSims")
 ```
 
+
 # Project structure
 
 ## Overview
@@ -54,6 +55,8 @@ In combination, the following functions simulate a time series:
 #### Function to generate activity curve in each year
 
 #### Function to sample activity curve in each year
+
+#### Function to calc actual pheno + abund metrics for each year from activity curve
 
 Notes: uses parameters for "sampling design"
 
