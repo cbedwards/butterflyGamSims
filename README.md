@@ -19,7 +19,9 @@ You can install the development version of butterflyGamSims from
 devtools::install_github("cbedwards/butterflyGamSims")
 ```
 
-# Project structure
+# Using this package:
+
+# Project structure (internal use/trakcing)
 
 ## Overview
 

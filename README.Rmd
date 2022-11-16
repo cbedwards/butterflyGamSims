@@ -30,8 +30,10 @@ You can install the development version of butterflyGamSims from [GitHub](https:
 devtools::install_github("cbedwards/butterflyGamSims")
 ```
 
+# Using this package: 
 
-# Project structure
+
+# Project structure (internal use/trakcing)
 
 ## Overview
 
