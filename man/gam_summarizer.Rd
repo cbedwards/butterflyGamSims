@@ -36,7 +36,9 @@ generally constant across years, changes in log abundance index across years wil
 in log abundance.
 }
 \description{
-Summarizing activity curve of single year
+Dev note: potentially this could work across years with judicious use of dplyr \code{group_by} and \code{summarize},
+but implementation is non-obvious (to me) for checking bounds. Revisit for speed if needed,
+and modify gam_summarize_all accordingly.
 }
 \details{
 In addition to estimating our key metrics (abundance, quantile-based phenology landmarks, flight period),

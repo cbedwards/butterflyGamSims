@@ -1,5 +1,10 @@
 #' Summarizing activity curve of single year
 #'
+#' Dev note: potentially this could work across years with judicious use of dplyr `group_by` and `summarize`,
+#' but implementation is non-obvious (to me) for checking bounds. Revisit for speed if needed,
+#' and modify gam_summarize_all accordingly.
+#'
+#'
 #' @param count.pred predicted count data
 #' @param doy.pred day of year corresponding to count.pred
 #' @param bounds.reasonable For identifying unreasonable fits, provide the days at which we really SHOULD see ~ 0 abundance.
@@ -67,7 +72,7 @@ gam_summarizer=function(count.pred,
   ## number of individuals would be abund/15.
 
 
-  # first calulate the cumulative distribution function
+  # first calculate the cumulative distribution function
   cdf = cumsum(count.pred)/sum(count.pred)
   res.cur$onset = doy.pred[min(which(cdf>=0.1))]
   res.cur$median = doy.pred[min(which(cdf>=0.5))]
@@ -85,3 +90,42 @@ gam_summarizer=function(count.pred,
   return(res.cur)
 
 }
+
+#' Estimate metrics for full activity curve
+#'
+#' @param activity.curve data frame with `$years`, `$doy`, and `$act`, typically generated
+#' withing `gam_fitter()`
+#' @param ... `"bounds.reasonable"`, "`bounds.thresh.rel"`, and `"bounds.thresh.abs"` can
+#' be specified here to pass on to `gam_summarizer()`.
+#'
+#' @returns Data frame with summary metrics for each year. see `gam_summarizer()` for details.
+#'
+#' Helper function to summarize multi-year activity curve dataframe with `gam_summarizer`
+#' which (CURRENTLY) fits one year at a time. This function makes it easier to
+#' update code to use an optimized `gam_summarizer` if I get there.
+#' Note: this is a bit fragile, and sensitive to changes in what `gam_summarizer` outputs.
+#' Not sure if that's worth working around though. Leaving for now.
+#'
+gam_summarize_all = function(activity.curve,...){
+  parms.opt = list(...)
+  stopifnot(names(parms.opt) %in% c("bounds.reasonable",
+                                    "bounds.thresh.rel",
+                                    "bounds.thresh.abs"))
+  dat.years = unique(activity.curve$years)
+  dat.sum = data.frame(abund = rep(-999, length(dat.years)),
+                       onset = rep(-999, length(dat.years)),
+                       median = rep(-999, length(dat.years)),
+                       end = rep(-999, length(dat.years)),
+                       fp = rep(-999, length(dat.years)),
+                       boundary.reasonable.rel = rep(FALSE, length(dat.years)),
+                       boundary.reasonable.abs = rep(FALSE, length(dat.years)))
+  for(i in 1:nrow(dat.sum))
+    dat.sum[i,] = gam_summarizer(count.pred = activity.curve[activity.curve$years == dat.years[i],
+                                                             "act"],
+                                 doy.pred = activity.curve[activity.curve$years == dat.years[i],
+                                                           "doy"],
+                                 ...)
+  dat.sum$years = dat.years
+  return(dat.sum)
+}
+
