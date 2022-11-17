@@ -12,7 +12,8 @@ gam_fitter(
   doy.knots,
   years.smooth,
   anchor.flag,
-  anchor.dist = NULL
+  anchor.dist = NULL,
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ some number of days before and after}
 
 \item{anchor.dist}{How many days out from the real data should anchor zeroes be added? Defaults to NULL,
 must be an integer if \code{anchor.dist==TRUE}.}
+
+\item{...}{additional arguments for identifying reasonable model fits. See \code{?gam_summarizer}}
 }
 \value{
 List with four components. \verb{$summary} is a data frame frame with estimated attributes for

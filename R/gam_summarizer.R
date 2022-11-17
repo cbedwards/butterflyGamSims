@@ -1,8 +1,8 @@
 #' Summarizing activity curve of single year
 #'
 #' Dev note: potentially this could work across years with judicious use of dplyr `group_by` and `summarize`,
-#' but implementation is non-obvious (to me) for checking bounds. Revisit for speed if needed,
-#' and modify gam_summarize_all accordingly.
+#' but implementation is non-obvious (to me) for checking reasonable fit using hte "bounds.reasonable" framework.
+#'  Revisit for speed if needed, and modify gam_summarize_all accordingly.
 #'
 #'
 #' @param count.pred predicted count data

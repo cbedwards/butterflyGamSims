@@ -71,6 +71,8 @@ time series
 
 #### Function to fit time series data with gam model
 
+`gam_fitter`
+
 Note: want to be able to toggle on/off the use of anchors, the use of
 different gam structures
 
@@ -79,6 +81,10 @@ different gam structures
 See `gam_summarizer`. Note that this also does basic “badfit”
 diagnostics in the form of `boundary.reasonable.rel` and
 `boundary.reasonable.abs`.
+
+`gam_summarize_all` applies `gam_summarizer` to all years.
+
+This is all called within `gam_fitter`.
 
 #### Function to fit across-year trends
 

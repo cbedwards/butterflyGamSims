@@ -37,8 +37,8 @@ in log abundance.
 }
 \description{
 Dev note: potentially this could work across years with judicious use of dplyr \code{group_by} and \code{summarize},
-but implementation is non-obvious (to me) for checking bounds. Revisit for speed if needed,
-and modify gam_summarize_all accordingly.
+but implementation is non-obvious (to me) for checking reasonable fit using hte "bounds.reasonable" framework.
+Revisit for speed if needed, and modify gam_summarize_all accordingly.
 }
 \details{
 In addition to estimating our key metrics (abundance, quantile-based phenology landmarks, flight period),

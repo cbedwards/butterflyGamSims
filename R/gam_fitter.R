@@ -23,6 +23,7 @@
 #' some number of days before and after
 #' @param anchor.dist How many days out from the real data should anchor zeroes be added? Defaults to NULL,
 #' must be an integer if `anchor.dist==TRUE`.
+#' @param ... additional arguments for identifying reasonable model fits. See `?gam_summarizer`
 #'
 #' @details `gam_fitter` fits the data using a tensor product smooth, with potentially different basis functions
 #' for the doy and year dimensions. Fitting uses restricted maximum likelihood (`methods = "REML"` in `gam()`) and
@@ -66,7 +67,8 @@ gam_fitter = function(years.vec,
                       doy.knots,
                       years.smooth,
                       anchor.flag,
-                      anchor.dist = NULL){
+                      anchor.dist = NULL,
+                      ...){
   stopifnot(is.numeric(years.vec),
             is.numeric(doy.vec),
             is.numeric(count.vec),
@@ -133,7 +135,8 @@ gam_fitter = function(years.vec,
   activity.curve$act = mgcv::predict.gam(out, activity.curve, type = "response")
   names(activity.curve)[names(activity.curve)=="years.use"] = "years"
 
-  dat.sum = gam_summarize_all(activity.curve)
+  dat.sum = gam_summarize_all(activity.curve,
+                              ...)
 
 
   return(list(summary = dplyr::inner_join(dat.summary, dat.sum, by = "years"),
