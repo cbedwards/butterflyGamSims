@@ -16,6 +16,7 @@ Suggests:
     tidyverse
 Config/testthat/edition: 3
 Imports: 
+    data.table,
     deSolve,
     dplyr,
     ggplot2,
