@@ -6,6 +6,11 @@
 \usage{
 gam_fitall_load(sim.name, path)
 }
+\arguments{
+\item{sim.name}{Name of this simulation instance.}
+
+\item{path}{Filepath to save results into. Likely to remain constant across different calls of \code{timeseries_gen()}}
+}
 \value{
 list of two data frames. \verb{$yearly.estimates} contains the metrics estimated
 for each year of each simulation for each gam method (\verb{$sim.id} and \verb{$gam.id}). \verb{$gam.args}

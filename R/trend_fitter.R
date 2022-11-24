@@ -5,6 +5,9 @@
 #' Generally just feed in `$summary` component of the results of `gam_fitter`, with or without
 #' applying censorship filters.
 #'
+#' @param nyear.min Minimum number of years to use when fitting. If fewer years are provided,
+#' trends are returned as NA
+#'
 #' @return 1-row data frame with linear trends across years for each metric. For abundance,
 #' `growth.rate` is the trend in log abundance across years. `$nyears` is the number of unique
 #' years provided.
@@ -32,42 +35,50 @@
 #'             dat.fitted = out$dat.fitted,
 #'             activity.curve = out$activity.curve)
 #' trend_fitter(out$summary)
-trend_fitter = function(dat.filtered){
+trend_fitter = function(dat.filtered,
+                        nyear.min){
   res.cur = data.frame(growth.rate = -999,
                        median = -999,
                        onset = -999,
                        end = -999,
                        fp = -999)
   res.cur$nyears = length(unique(dat.filtered$years))
+  if(res.cur$nyears< nyear.min){
+    res.cur$growth.rate = res.cur$onset = res.cur$median = res.cur$end = res.cur$fp = NA
+  }else{
 
-  ## abundance trend (log)
-  dat.filtered$logabund=log(dat.filtered$abund)
-  out = stats::lm(logabund ~ years, data=dat.filtered)
-  res.cur$growth.rate = stats::coef(out)[2]
+    ## abundance trend (log)
+    dat.filtered$logabund=log(dat.filtered$abund)
+    out = stats::lm(logabund ~ years, data=dat.filtered)
+    res.cur$growth.rate = stats::coef(out)[2]
 
-  # trend in median date
-  out = stats::lm(median ~ years, data=dat.filtered)
-  res.cur$median = stats::coef(out)[2]
+    # trend in median date
+    out = stats::lm(median ~ years, data=dat.filtered)
+    res.cur$median = stats::coef(out)[2]
 
-  #onset
-  out = stats::lm(onset ~ years, data=dat.filtered)
-  res.cur$onset = stats::coef(summary(out))[2,2]
+    #onset
+    out = stats::lm(onset ~ years, data=dat.filtered)
+    res.cur$onset = stats::coef(summary(out))[2,2]
 
-  #end
-  out = stats::lm(end ~ years, data=dat.filtered)
-  res.cur$end = stats::coef(summary(out))[2,2]
+    #end
+    out = stats::lm(end ~ years, data=dat.filtered)
+    res.cur$end = stats::coef(summary(out))[2,2]
 
-  #fp
-  out = stats::lm(fp ~ years, data=dat.filtered)
-  res.cur$fp = stats::coef(summary(out))[2,2]
-
+    #fp
+    out = stats::lm(fp ~ years, data=dat.filtered)
+    res.cur$fp = stats::coef(summary(out))[2,2]
+  }
   return(res.cur)
 }
 
 #' Calculate trends (and diagnostic metrics) for a given censorship method
 #'
+#' Applies to all sim.id and gam.id separately
+#'
 #' @param dat.summary Data frame with phenology and abundance metrics for any number of years.
-#' Generally just feed in `$summary` component of the results of `gam_fitter`.
+#' Generally just feed in `$summary` component of the results of `gam_fitter`. Must include `year`,
+#' `n`, `nzero`, `abund`, `onset`, `median`, `end`, `fp`, `boundary.reasonable.rel`, `boundary.reasonable.abs`,
+#' `sim.id`, and `gam.id`
 #' @param nobs.min Minimum number of total observations to include a year (REAL observations;
 #' anchors are not counted). This is only relevant if years vary in the number of sampling days
 #' @param nnzero.min Minimum number of non-zero observations to include a year
@@ -110,10 +121,10 @@ trend_fitter = function(dat.filtered){
 #' trend_method(out$summary,
 #'              nobs.min = 0,
 #'              nnzero.min = 3)
-
 trend_method = function(dat.summary,
                         nobs.min,
                         nnzero.min,
+                        nyear.min,
                         bound.reasonable.rel = F,
                         bound.reasonable.abs = F){
   dat.use = dat.summary[dat.summary$n - dat.summary$nzero>=nnzero.min &
@@ -122,12 +133,127 @@ trend_method = function(dat.summary,
                              dat.summary$boundary.reasonable.rel) &
                           (!bound.reasonable.abs |
                              dat.summary$boundary.reasonable.abs), ]
-  trend_fitter(dat.use)
-  dat.res = cbind(trend_fitter(dat.use),
-                  data.frame(nobs.min = nobs.min,
-                             nnzero.min = nnzero.min,
-                             bound.reasonable.rel = bound.reasonable.rel,
-                             bound.reasonable.abs = bound.reasonable.abs,
-                             nyear.original = nrow(dat.summary)))
+  iteration.ids = unique(dat.use[c("sim.id", "gam.id")])
+  res.list = list(); list.ind = 1
+  for(i in 1:nrow(iteration.ids)){
+    dat.cur = dat.use[dat.use$sim.id == iteration.ids$sim.id[i] &
+                        dat.use$gam.id == iteration.ids$gam.id[i], ]
+    dat.cur = cbind(trend_fitter(dat.cur, nyear.min = nyear.min),
+                    data.frame(nyear.original = nrow(dat.summary),
+                               nyear.min = nyear.min,
+                               nobs.min = nobs.min,
+                               nnzero.min = nnzero.min,
+                               bound.reasonable.rel = bound.reasonable.rel,
+                               bound.reasonable.abs = bound.reasonable.abs,
+                               sim.id = iteration.ids$sim.id[i],
+                               gam.id = iteration.ids$gam.id[i]))
+    res.list[[list.ind]] = dat.cur; list.ind = list.ind + 1
+  }
+  dat.res = do.call(rbind, res.list)
   return(dat.res)
+}
+
+#' Fit trend data and aggregate with other information
+#'
+#' This is the workhouse function for starting with yearly metrics and fitting parameters
+#'  and producing a data frame with all the pieces needed to evaluate the methods.
+#'
+#' @inheritParams trend_method
+#' @param gam.args
+#' @param timeseries
+#'
+#' @return Data frame including fitted trend summary (see `trend_method()`),
+#' summary of the number of "unreasonable" gam fits, the real underlying trends,
+#' the exclusion methods used, and the gam methods used. Trend terms starting with "true"
+#' reflect the trend estimated from the (numerically estimated) abundance and phenology
+#' metrics of the underlying activity curve. Because of the randomness associated with
+#' sampling (e.g. Poisson or negative binomial counts), we don't expect the data to exactly
+#' reflect this activity curve even if the gam fit + exclusion rules were perfect.
+#'
+#' @details Fill in column-by-column description here.
+#'
+#'
+#'
+#' @export
+#'
+#' @examples
+trend_aggregator = function(dat.summary,
+                            gam.args,
+                            timeseries,
+                            nobs.min,
+                            nnzero.min,
+                            nyear.min,
+                            bound.reasonable.rel = T,
+                            bound.reasonable.abs = T){
+  ## fitting trend to "true" pattern
+  timeseries = timeseries[ , -which(names(timeseries) %in% c("doy", "count", "act"))]
+  timeseries = timeseries[!duplicated(timeseries),]
+  timeseries$gam.id = -1
+  timeseries$boundary.reasonable.rel  = TRUE
+  timeseries$boundary.reasonable.abs = TRUE
+  timeseries$n = 999
+  timeseries$nzero = 0
+  names(timeseries) = gsub("[.]true","", names(timeseries))
+  # print(head(timeseries))
+  trends.true = trend_method(timeseries,
+                             nobs.min = 1,
+                             nnzero.min = 1,
+                             nyear.min = nyear.min,
+                             bound.reasonable.rel = T,
+                             bound.reasonable.abs = T
+  )
+  trends.true = trends.true[, c("sim.id", "growth.rate", "median", "onset", "end", "fp")]
+  names(trends.true)[-1] = c("true.growth.rate", "true.median", "true.onset", "true.end", "true.fp")
+  exclusion.methods = data.frame(expand.grid(nobs.min = nobs.min,
+                                             nnzero.min = nnzero.min,
+                                             nyear.min = nyear.min))
+  trends.list = list()
+  for(i.exclusion in 1:nrow(exclusion.methods)){
+  trends.list[[i.exclusion]] = trend_method(dat.summary = dat.summary,
+                            nobs.min = exclusion.methods$nobs.min[i.exclusion],
+                            nnzero.min = exclusion.methods$nnzero.min[i.exclusion],
+                            nyear.min = exclusion.methods$nyear.min[i.exclusion],
+                            bound.reasonable.rel = bound.reasonable.rel,
+                            bound.reasonable.abs = bound.reasonable.abs)
+  }
+  trends.est = do.call(rbind, trends.list)
+  unreasonable = dat.summary |>
+    dplyr::group_by( .data[["sim.id"]]) |>
+    dplyr::summarise(unreasonable.rel = sum(!boundary.reasonable.rel),
+                     unreasonable.abs = sum(!boundary.reasonable.abs),
+                     unreasonable.all = sum(!boundary.reasonable.abs |
+                                              !boundary.reasonable.rel)) |>
+    dplyr::ungroup()
+  res = dplyr::inner_join(trends.est, trends.true, by = "sim.id")
+  res = dplyr::inner_join(res, unreasonable, by = "sim.id")
+  res = dplyr::inner_join(res, gam.args, by = "gam.id")
+  return(res)
+}
+
+
+trend_aggregator_gen = function(sim.name,
+                                path,
+                                dat.summary,
+                                gam.args,
+                                timeseries,
+                                nobs.min,
+                                nnzero.min,
+                                nyear.min,
+                                append = F,
+                                bound.reasonable.rel = F,
+                                bound.reasonable.abs = F){
+  stopifnot(is.character(path),
+            is.character(sim.name))
+  path.use = paste0(path, "/", sim.name)
+  res = trend_aggregator(dat.summary = dat.summary,
+                         gam.args = gam.args,
+                         timeseries = timeseries,
+                         nobs.min = nobs.min,
+                         nnzero.min = nnzero.min,
+                         nyear.min = nyear.min,
+                         bound.reasonable.rel = bound.reasonable.rel,
+                         bound.reasonable.abs = bound.reasonable.abs)
+  data.table::fwrite(res,
+                     paste0(path.use,"/trends-aggregated.csv"), append = append)
+  return(res)
 }

@@ -3,7 +3,7 @@
 #' Each separate timeseries (identified with `$sim.id`) will be fit separately, once for each
 #' gam method. GAM methods are defined with separate rows of the `$gam.args` arguments.
 #'
-#' @param timeseries_sim Collection of timeseries, including `$years`, `$doy`, `$count`, and `$sim.id`.
+#' @param timeseries Collection of timeseries, including `$years`, `$doy`, `$count`, and `$sim.id`.
 #'   Typically the `$timeseries` output of `timeseries_sim()` or `timeseries_load()`. If speed is
 #'   of particular concern, can pass the trimmed data frame (`timeseries_sim()` generates
 #'   many more columns.)
@@ -72,6 +72,7 @@ gam_fitall = function(timeseries,
     yearly.df$gam.id = i.gamfit
     gamfits.list[[i.gamfit]] = yearly.df
   }
+  gam.args$gam.id = 1:nrow(gam.args)
   gamfits.df = do.call(rbind, gamfits.list)
   return(list(yearly.estimates = gamfits.df, gam.args = gam.args))
 }
@@ -80,7 +81,7 @@ gam_fitall = function(timeseries,
 #'
 #' Path and sim name should match those used in companion `timeseries_gen()` call.
 #'
-#' @inheritParams timeseries_load
+#' @inheritParams timeseries_gen
 #' @inheritParams gam_fitall
 #' @param append Defaults to FALSE. If true, add results to existing gam fits csvs instead
 #' of replacing them.
@@ -107,6 +108,7 @@ gam_fitall_gen = function(sim.name,
 #'
 #' Helper function for using `gam_fitall_gen()`.
 #'
+#' @inheritParams timeseries_gen
 #' @inherit gam_fitall examples
 #' @inherit gam_fitall return
 #' @export

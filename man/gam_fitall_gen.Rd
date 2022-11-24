@@ -7,6 +7,10 @@
 gam_fitall_gen(sim.name, path, timeseries, gam.args, append = FALSE)
 }
 \arguments{
+\item{sim.name}{Name of this simulation instance.}
+
+\item{path}{Filepath to save results into. Likely to remain constant across different calls of \code{timeseries_gen()}}
+
 \item{timeseries}{Collection of timeseries, including \verb{$years}, \verb{$doy}, \verb{$count}, and \verb{$sim.id}.
 Typically the \verb{$timeseries} output of \code{timeseries_sim()} or \code{timeseries_load()}. If speed is
 of particular concern, can pass the trimmed data frame (\code{timeseries_sim()} generates

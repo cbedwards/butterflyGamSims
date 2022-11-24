@@ -6,6 +6,11 @@
 \usage{
 timeseries_load(sim.name, path)
 }
+\arguments{
+\item{sim.name}{Name of this simulation instance.}
+
+\item{path}{Filepath to save results into. Likely to remain constant across different calls of \code{timeseries_gen()}}
+}
 \value{
 List of two dataframes, \verb{$timeseries} and \verb{$parms}. \verb{$timeseries} contains all nsim
 simulated timeseries, identified by sim.id. See \code{timeseries_generator()}

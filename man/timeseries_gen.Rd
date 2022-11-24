@@ -21,6 +21,8 @@ timeseries_gen(
 
 \item{path}{Filepath to save results into. Likely to remain constant across different calls of \code{timeseries_gen()}}
 
+\item{nsims}{Number of simulations to run}
+
 \item{years}{Years  for which to simulate data}
 
 \item{doy.samples}{Days of year to simulate observation events.}

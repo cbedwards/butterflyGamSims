@@ -47,8 +47,8 @@
 gam_summarizer=function(count.pred,
                         doy.pred,
                         bounds.reasonable = c(1,364),
-                        bounds.thresh.rel = 1/10,
-                        bounds.thresh.abs = 1/100){
+                        bounds.thresh.rel = 1/100,
+                        bounds.thresh.abs = 1/10){
   stopifnot(is.numeric(count.pred),
             is.numeric(doy.pred),
             is.numeric(bounds.reasonable),

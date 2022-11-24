@@ -4,7 +4,7 @@
 #' Dev note: create helper function to run this and save results to 2 csv files,
 #'   and second function to load them again.
 #'
-#' @param Nsims Numeber of simulations to run
+#' @param nsims Number of simulations to run
 #' @inheritParams timeseries_generator
 #' @param sim.parms list with named components matching each of the required additional
 #' parameters for the selected abundance type, activity type, and sample type.
@@ -117,7 +117,7 @@ timeseries_gen = function(sim.name,
 
 #' Title
 #'
-#' @inheritParams timeseries_sim
+#' @inheritParams timeseries_gen
 #' @inherit timeseries_sim return
 #' @export
 #'

@@ -15,6 +15,8 @@ timeseries_sim(
 )
 }
 \arguments{
+\item{nsims}{Number of simulations to run}
+
 \item{years}{Years  for which to simulate data}
 
 \item{doy.samples}{Days of year to simulate observation events.}
@@ -37,8 +39,6 @@ See details for full list of parameter names. Each sim.parm component can either
 a single value (every simulation will use that value), or vector of the minimum and
 maximum desired valeus (each simulation will use a different value drawn from a uniform
 with those bounds).}
-
-\item{Nsims}{Numeber of simulations to run}
 }
 \value{
 List of two dataframes, \verb{$timeseries} and \verb{$parms}. \verb{$timeseries} contains all nsim
