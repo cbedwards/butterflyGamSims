@@ -107,6 +107,50 @@ butterfly_gam_sim = function(sim.name,
 
 
 ## can take lists of doy.samples vectors, years vectors
+## BIG NOTE: this function gives CRAZY errors if timeseries.do and gam.do are FALSE but
+##   the appropriate timeseries and gam outputs have not been produced (ie changing
+##   other arguments and leaving those at FALSE. gam.do and timeseries.do should
+##   generally be TRUE; FALSE is only useful for rapid debugging of some steps in the code)
+
+#example:
+#
+# path.res = "G:/Dropbox/academia/research projects/butterfly-gam-sims/4_res"
+# gam.args = data.frame(doy.smooth = c("cc", "cc", "cc"),
+#                       doy.knots = c(5,3, 5),
+#                       years.smooth = c("cr", "cr", "cr"),
+#                       anchor.flag = c(TRUE, TRUE, FALSE),
+#                       anchor.dist = c(10, 10, 10))
+# sim.parms = list(growth.rate = -0.12,
+#                  init.size = 500,
+#                  act.mean = 130,
+#                  act.sd = 15,
+#                  theta = 5)
+#
+# ## Notes to self: (a) getting crazy error messages when trying to run
+# ##   simulator. Looks like it's interpretting filepath as a command somehow?
+# ##   seems to be showing up specifically in the timeseries_load and gam_fitall_load step.
+# ##   see locations of print items.
+# ##   (b) using the sim + gam inds is producing what looks like misbehavior.
+# ##   But check with different parameterization, which I will only find
+# ##   once I've go the weird "taking input= as..." error cleared out.
+#
+# res = butterfly_gam_simulator(sim.name = "multi-parm-test2",
+#                               path = path.res,
+#                               nsims = 5,
+#                               years = 1990:2010,
+#                               doy.samples = seq(100,160, by = 10),
+#                               abund.type = "exp",
+#                               activity.type = "gauss",
+#                               sample.type = "pois",
+#                               sim.parms = sim.parms,
+#                               gam.args = gam.args,
+#                               nobs.min = c(8, 6),
+#                               nnzero.min = 3,
+#                               nyear.min = 6,
+#                               timeseries.do = TRUE,
+#                               gam.do = TRUE)
+
+
 butterfly_gam_simulator = function(sim.name,
                                    path,
                                    nsims,
@@ -123,30 +167,16 @@ butterfly_gam_simulator = function(sim.name,
                                    bound.reasonable.rel = F,
                                    bound.reasonable.abs = F,
                                    timeseries.do = TRUE,
-                                   gam.do = TRUE){
-  #loop over arguments:  years, doy.samples, abund.type, activity.type, sample.type, maybe other pieces,
-  #rerun each as a separate butterflygam_sim with a unique readable sim name.
-  #
-  #expand.grid for most things
-  #but doy.samples needs to be turned into a list.
-  #
-  #example:
-  #
-  #res = butterfly_gam_sim(sim.name = "full-kaboodle",
-  # path = path.res,
-  # nsims = 10,
-  # years = list(1990:2010,
-  #              1980:2020),
-  # doy.samples = seq(100,160, by = 10),
-  # abund.type = "exp",
-  # activity.type = "gauss",
-  # sample.type = "pois",
-  # sim.parms = sim.parms,
-  # gam.args = gam.args,
-  # nobs.min = c(5,8),
-  # nnzero.min = 5,
-  # nyear.min = 3)
-  dir.create(paste0(path, "/", sim.name))
+                                   gam.do = TRUE,
+                                   safe = FALSE){
+#  stopifnot(!file.exists(paste0(path, "/", sim.name) | ) #figure out stopifnot to ensure that safe causes error out instead of overwrite.
+#  #figure out overwriting successfully.
+  # if(timeseries.do & gam.do & !safe){
+  #   unlink(paste0(path, "/", sim.name))
+  #   dir.create(paste0(path, "/", sim.name))
+  # }else{
+    dir.create(paste0(path, "/", sim.name), showWarnings = FALSE)
+  # }
   if(!is.list(doy.samples)){
     doy.samples = list(doy.samples)
   }
@@ -164,7 +194,6 @@ butterfly_gam_simulator = function(sim.name,
                                        stringsAsFactors = FALSE))
   for(i in 1:nrow(bigparms)){
     sim.name.cur = paste0(sim.name,"/", sim.name, "-", paste0(bigparms[i,], collapse = '-'))
-    print(sim.name.cur)
     print(bigparms[i,])
     butterfly_gam_sim(sim.name = sim.name.cur,
                       path = path,
@@ -188,13 +217,14 @@ butterfly_gam_simulator = function(sim.name,
   write.csv(bigparms,
             file = paste0(path,"/", sim.name, "/parms.csv"),
             row.names = FALSE)
-  file.doy = paste0(path,"/", sim.name, "/doy-list.csv")
+  file.doy = paste0(path,"/", sim.name, "/doy-list.txt")
   cat("Doy samples:\n", file = file.doy)
   for(i in 1:length(doy.samples)){
     cat(paste0("[[",i, "]] = ",paste0(doy.samples[[i]], collapse = ", "), "\n"), file = file.doy)
   }
-  file.years = paste0(path,"/", sim.name, "/years-list.csv")
-  cat("Years:\n", file = file.doy)
+  file.years = paste0(path,"/", sim.name, "/years-list.txt")
+  cat("Years:\n", file = file.years)
+  print(class(years))
   for(i in 1:length(years)){
     cat(paste0("[[",i, "]] = ", paste0(years[[i]], collapse = ", "), "\n"), file = file.years)
   }

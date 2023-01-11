@@ -133,23 +133,17 @@ trend_method = function(dat.summary,
                              dat.summary$boundary.reasonable.rel) &
                           (!bound.reasonable.abs |
                              dat.summary$boundary.reasonable.abs), ]
-  iteration.ids = unique(dat.use[,c("sim.id", "gam.id")])
-  print(iteration.ids)
+  iteration.ids = unique(dat.summary[,c("sim.id", "gam.id")]) #based off of ALL data
   res.list = list(); list.ind = 1
-  print(nrow(iteration.ids))
   for(i.iter in 1:nrow(iteration.ids)){
-
-    print(paste0("iteration ", i.iter))
-    print(iteration.ids[i.iter,])
     dat.cur = dat.use[dat.use$sim.id == iteration.ids$sim.id[i.iter] &
                         dat.use$gam.id == iteration.ids$gam.id[i.iter], ]
     cur.nyear.original = nrow(dat.summary[dat.summary$sim.id == iteration.ids$sim.id[i.iter] &
                                             dat.summary$gam.id == iteration.ids$gam.id[i.iter], ])
-    print("diagnostics:")
-    print(cur.nyear.original)
-    print((trend_fitter(dat.cur, nyear.min = nyear.min)))
-    dat.cur = cbind(trend_fitter(dat.cur, nyear.min = nyear.min),
-                    data.frame(nyear.original = cur.nyear.original,
+    out.trendfit = trend_fitter(dat.cur, nyear.min = nyear.min)
+    dat.cur = cbind(out.trendfit,
+                    data.frame(passed.filtering = out.trendfit$nyears >= nyear.min,
+                               nyear.original = cur.nyear.original,
                                nyear.min = nyear.min,
                                nobs.min = nobs.min,
                                nnzero.min = nnzero.min,
