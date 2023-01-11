@@ -1,4 +1,4 @@
-#' Title
+#' Generate time series, fit them with gams, summarize gam fits, and estimate associated trends.
 #'
 #' @param sim.name
 #' @param path
@@ -105,7 +105,92 @@ butterfly_gam_sim = function(sim.name,
                              bound.reasonable.abs = bound.reasonable.abs)
 }
 
-butterfly_gam_simulator = function(){
-  #loop over years, doy.samples, abund.type, activity.type, sample.type, maybe other pieces,
-  #reun each as a separate butterflygam_sim with a unique readable sim name.
+
+## can take lists of doy.samples vectors, years vectors
+butterfly_gam_simulator = function(sim.name,
+                                   path,
+                                   nsims,
+                                   years,
+                                   doy.samples,
+                                   abund.type,
+                                   activity.type,
+                                   sample.type,
+                                   sim.parms,
+                                   gam.args,
+                                   nobs.min,
+                                   nnzero.min,
+                                   nyear.min,
+                                   bound.reasonable.rel = F,
+                                   bound.reasonable.abs = F){
+  #loop over arguments:  years, doy.samples, abund.type, activity.type, sample.type, maybe other pieces,
+  #rerun each as a separate butterflygam_sim with a unique readable sim name.
+  #
+  #expand.grid for most things
+  #but doy.samples needs to be turned into a list.
+  #
+  #example:
+  #
+  #res = butterfly_gam_sim(sim.name = "full-kaboodle",
+  # path = path.res,
+  # nsims = 10,
+  # years = list(1990:2010,
+  #              1980:2020),
+  # doy.samples = seq(100,160, by = 10),
+  # abund.type = "exp",
+  # activity.type = "gauss",
+  # sample.type = "pois",
+  # sim.parms = sim.parms,
+  # gam.args = gam.args,
+  # nobs.min = c(5,8),
+  # nnzero.min = 5,
+  # nyear.min = 3)
+  if(!is.list(doy.samples)){
+    doy.samples = list(doy.samples)
+  }
+  if(!is.list(years)){
+    years = list(years)
+  }
+  bigparms = as.data.frame(expand.grid(years.ind = 1:length(years),
+                                       doy.samples.ind = 1:length(doy.samples),
+                                       abund.type = unique(abund.type),
+                                       activity.type = unique(activity.type),
+                                       sample.type = unique(sample.type),
+                                       nobs.min = unique(nobs.min),
+                                       nnzero.min = unique(nnzero.min),
+                                       nyear.min = unique(nyear.min),
+                                       stringsAsFactors = FALSE))
+  for(i in 1:nrow(bigparms)){
+    sim.name.cur = paste0(sim.name,"/", sim.name, "-", paste0(bigparms[,1], collapse = '-'))
+    print(bigparms[i,])
+    butterfly_gam_sim(sim.name = sim.name.cur,
+                      path = path,
+                      nsims = nsims,
+                      years = years[[bigparms$years.ind[i]]],
+                      doy.samples = doy.samples[[bigparms$doy.samples.ind[i]]],
+                      abund.type = bigparms$abund.type[i],
+                      activity.type = bigparms$activity.type[i],
+                      sample.type  = bigparms$sample.type[i],
+                      sim.parms = sim.parms,
+                      gam.args = gam.args,
+                      nobs.min = bigparms$nobs.min[i],
+                      nnzero.min = bigparms$nnzero.min[i],
+                      nyear.min = bigparms$nyear.min[i],
+                      bound.reasonable.rel = F,
+                      bound.reasonable.abs = F,
+                      append = FALSE,
+                      timeseries.do = TRUE,
+                      gam.do = TRUE)
+  }
+  write.csv(bigparms,
+            file = here(path, sim.name, "-parms.csv"))
+  file.doy = here(path, sim.name, "-doy-list.csv")
+  cat("Doy samples:\n", file = file.doy)
+  for(i in 1:length(doy.samples)){
+    cat(paste0("[[",i, "]] = ",doy.samples[[i]], "\n"), file = file.doy)
+  }
+  file.years = here(path, sim.name, "-years-list.csv")
+  cat("Years:\n", file = file.doy)
+  for(i in 1:length(years)){
+    cat(paste0("[[",i, "]] = ", years[[i]], "\n"), file = file.years)
+  }
 }

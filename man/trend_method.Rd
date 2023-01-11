@@ -8,13 +8,16 @@ trend_method(
   dat.summary,
   nobs.min,
   nnzero.min,
+  nyear.min,
   bound.reasonable.rel = F,
   bound.reasonable.abs = F
 )
 }
 \arguments{
 \item{dat.summary}{Data frame with phenology and abundance metrics for any number of years.
-Generally just feed in \verb{$summary} component of the results of \code{gam_fitter}.}
+Generally just feed in \verb{$summary} component of the results of \code{gam_fitter}. Must include \code{year},
+\code{n}, \code{nzero}, \code{abund}, \code{onset}, \code{median}, \code{end}, \code{fp}, \code{boundary.reasonable.rel}, \code{boundary.reasonable.abs},
+\code{sim.id}, and \code{gam.id}}
 
 \item{nobs.min}{Minimum number of total observations to include a year (REAL observations;
 anchors are not counted). This is only relevant if years vary in the number of sampling days}
@@ -34,7 +37,7 @@ the filtering criterion used to censor years before fitting trends (arguments fo
 this function), and the original number of years before censoring (\code{nyear.original}))
 }
 \description{
-Calculate trends (and diagnostic metrics) for a given censorship method
+Applies to all sim.id and gam.id separately
 }
 \examples{
 set.seed(10)

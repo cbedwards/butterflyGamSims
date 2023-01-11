@@ -4,12 +4,15 @@
 \alias{trend_fitter}
 \title{Fit the abundance and phenology trends for summary statistics of time series}
 \usage{
-trend_fitter(dat.filtered)
+trend_fitter(dat.filtered, nyear.min)
 }
 \arguments{
 \item{dat.filtered}{Data frame with phenology and abundance metrics for any number of years.
 Generally just feed in \verb{$summary} component of the results of \code{gam_fitter}, with or without
 applying censorship filters.}
+
+\item{nyear.min}{Minimum number of years to use when fitting. If fewer years are provided,
+trends are returned as NA}
 }
 \value{
 1-row data frame with linear trends across years for each metric. For abundance,

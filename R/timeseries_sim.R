@@ -1,8 +1,6 @@
 #' Simulate multiple time series for given scenario and parameter values.
 #'
 #' Dev note: should parallelize generation, I think.
-#' Dev note: create helper function to run this and save results to 2 csv files,
-#'   and second function to load them again.
 #'
 #' @param nsims Number of simulations to run
 #' @inheritParams timeseries_generator
@@ -115,7 +113,7 @@ timeseries_gen = function(sim.name,
   cat(paste0("Timeseries saved in ", path.use, "\n"))
 }
 
-#' Title
+#' Read timeseries from files
 #'
 #' @inheritParams timeseries_gen
 #' @inherit timeseries_sim return

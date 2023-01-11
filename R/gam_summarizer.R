@@ -119,12 +119,13 @@ gam_summarize_all = function(activity.curve,...){
                        fp = rep(-999, length(dat.years)),
                        boundary.reasonable.rel = rep(FALSE, length(dat.years)),
                        boundary.reasonable.abs = rep(FALSE, length(dat.years)))
-  for(i in 1:nrow(dat.sum))
+  for(i in 1:nrow(dat.sum)){
     dat.sum[i,] = gam_summarizer(count.pred = activity.curve[activity.curve$years == dat.years[i],
                                                              "act"],
                                  doy.pred = activity.curve[activity.curve$years == dat.years[i],
                                                            "doy"],
                                  ...)
+  }
   dat.sum$years = dat.years
   return(dat.sum)
 }

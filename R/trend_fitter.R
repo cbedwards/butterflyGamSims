@@ -34,7 +34,7 @@
 #' fit_plotter(dat.timeseries = dat.sim,
 #'             dat.fitted = out$dat.fitted,
 #'             activity.curve = out$activity.curve)
-#' trend_fitter(out$summary)
+#' trend_fitter(out$summary, nyear.min = 4)
 trend_fitter = function(dat.filtered,
                         nyear.min){
   res.cur = data.frame(growth.rate = -999,
@@ -83,11 +83,11 @@ trend_fitter = function(dat.filtered,
 #' anchors are not counted). This is only relevant if years vary in the number of sampling days
 #' @param nnzero.min Minimum number of non-zero observations to include a year
 #' @param bound.reasonable.rel Should we only use years with "good" fits as identified
-#' using bount.reasonable.rel? See `gam_summarizer` for details.
+#' using bound.reasonable.rel? See `gam_summarizer` for details.
 #' @param bound.reasonable.abs Should we only use years with "good" fits as identified
-#' using bount.reasonable.abs? See `gam_summarizer` for details.
+#' using bound.reasonable.abs? See `gam_summarizer` for details.
 #'
-#' @return 1-row data frame with estimated trends (`growth.rate`, `median`, `onset`,
+#' @return Data frame with estimated trends (`growth.rate`, `median`, `onset`,
 #' `end`, `fp`), the number of years used to estimate the trends (`nyears`),
 #' the filtering criterion used to censor years before fitting trends (arguments for
 #' this function), and the original number of years before censoring (`nyear.original`))
@@ -139,7 +139,8 @@ trend_method = function(dat.summary,
     dat.cur = dat.use[dat.use$sim.id == iteration.ids$sim.id[i] &
                         dat.use$gam.id == iteration.ids$gam.id[i], ]
     dat.cur = cbind(trend_fitter(dat.cur, nyear.min = nyear.min),
-                    data.frame(nyear.original = nrow(dat.summary),
+                    data.frame(nyear.original = nrow(dat.summary[dat.summary$sim.id == iteration.ids$sim.id[i] &
+                                                                   dat.summary$gam.id == iteration.ids$gam.id[i], ]),
                                nyear.min = nyear.min,
                                nobs.min = nobs.min,
                                nnzero.min = nnzero.min,

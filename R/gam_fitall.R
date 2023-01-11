@@ -77,9 +77,10 @@ gam_fitall = function(timeseries,
   return(list(yearly.estimates = gamfits.df, gam.args = gam.args))
 }
 
-#' Helper funciton to run gam_fitall and save results in a systematic way.
+#' Helper function to run gam_fitall and save results in a systematic way.
 #'
-#' Path and sim name should match those used in companion `timeseries_gen()` call.
+#' Path and sim name should match those used in companion `timeseries_gen()` call. Instead
+#' of returning fitted gam objects, saves them to file.
 #'
 #' @inheritParams timeseries_gen
 #' @inheritParams gam_fitall
