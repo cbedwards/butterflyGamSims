@@ -121,7 +121,9 @@ butterfly_gam_simulator = function(sim.name,
                                    nnzero.min,
                                    nyear.min,
                                    bound.reasonable.rel = F,
-                                   bound.reasonable.abs = F){
+                                   bound.reasonable.abs = F,
+                                   timeseries.do = TRUE,
+                                   gam.do = TRUE){
   #loop over arguments:  years, doy.samples, abund.type, activity.type, sample.type, maybe other pieces,
   #rerun each as a separate butterflygam_sim with a unique readable sim name.
   #
@@ -144,6 +146,7 @@ butterfly_gam_simulator = function(sim.name,
   # nobs.min = c(5,8),
   # nnzero.min = 5,
   # nyear.min = 3)
+  dir.create(paste0(path, "/", sim.name))
   if(!is.list(doy.samples)){
     doy.samples = list(doy.samples)
   }
@@ -160,7 +163,8 @@ butterfly_gam_simulator = function(sim.name,
                                        nyear.min = unique(nyear.min),
                                        stringsAsFactors = FALSE))
   for(i in 1:nrow(bigparms)){
-    sim.name.cur = paste0(sim.name,"/", sim.name, "-", paste0(bigparms[,1], collapse = '-'))
+    sim.name.cur = paste0(sim.name,"/", sim.name, "-", paste0(bigparms[i,], collapse = '-'))
+    print(sim.name.cur)
     print(bigparms[i,])
     butterfly_gam_sim(sim.name = sim.name.cur,
                       path = path,
@@ -178,19 +182,20 @@ butterfly_gam_simulator = function(sim.name,
                       bound.reasonable.rel = F,
                       bound.reasonable.abs = F,
                       append = FALSE,
-                      timeseries.do = TRUE,
-                      gam.do = TRUE)
+                      timeseries.do = timeseries.do,
+                      gam.do = gam.do)
   }
   write.csv(bigparms,
-            file = here(path, sim.name, "-parms.csv"))
-  file.doy = here(path, sim.name, "-doy-list.csv")
+            file = paste0(path,"/", sim.name, "/parms.csv"),
+            row.names = FALSE)
+  file.doy = paste0(path,"/", sim.name, "/doy-list.csv")
   cat("Doy samples:\n", file = file.doy)
   for(i in 1:length(doy.samples)){
-    cat(paste0("[[",i, "]] = ",doy.samples[[i]], "\n"), file = file.doy)
+    cat(paste0("[[",i, "]] = ",paste0(doy.samples[[i]], collapse = ", "), "\n"), file = file.doy)
   }
-  file.years = here(path, sim.name, "-years-list.csv")
+  file.years = paste0(path,"/", sim.name, "/years-list.csv")
   cat("Years:\n", file = file.doy)
   for(i in 1:length(years)){
-    cat(paste0("[[",i, "]] = ", years[[i]], "\n"), file = file.years)
+    cat(paste0("[[",i, "]] = ", paste0(years[[i]], collapse = ", "), "\n"), file = file.years)
   }
 }

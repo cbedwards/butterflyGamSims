@@ -116,6 +116,7 @@ gam_fitall_gen = function(sim.name,
 gam_fitall_load = function(sim.name,
                            path){
   path.use = paste0(path, "/", sim.name)
+  print(path.use)
   yearly.estimates = data.table::fread(paste0(path.use,"/gam-yearly.estimates.csv"))
   gam.args = data.table::fread(paste0(path.use,"/gam-parms.csv"))
   return(list(yearly.estimates = yearly.estimates,

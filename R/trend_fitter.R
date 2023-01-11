@@ -127,27 +127,36 @@ trend_method = function(dat.summary,
                         nyear.min,
                         bound.reasonable.rel = F,
                         bound.reasonable.abs = F){
-  dat.use = dat.summary[dat.summary$n - dat.summary$nzero>=nnzero.min &
+  dat.use = dat.summary[(dat.summary$n - dat.summary$nzero) >= nnzero.min &
                           dat.summary$n >= nobs.min &
                           (!bound.reasonable.rel |
                              dat.summary$boundary.reasonable.rel) &
                           (!bound.reasonable.abs |
                              dat.summary$boundary.reasonable.abs), ]
-  iteration.ids = unique(dat.use[c("sim.id", "gam.id")])
+  iteration.ids = unique(dat.use[,c("sim.id", "gam.id")])
+  print(iteration.ids)
   res.list = list(); list.ind = 1
-  for(i in 1:nrow(iteration.ids)){
-    dat.cur = dat.use[dat.use$sim.id == iteration.ids$sim.id[i] &
-                        dat.use$gam.id == iteration.ids$gam.id[i], ]
+  print(nrow(iteration.ids))
+  for(i.iter in 1:nrow(iteration.ids)){
+
+    print(paste0("iteration ", i.iter))
+    print(iteration.ids[i.iter,])
+    dat.cur = dat.use[dat.use$sim.id == iteration.ids$sim.id[i.iter] &
+                        dat.use$gam.id == iteration.ids$gam.id[i.iter], ]
+    cur.nyear.original = nrow(dat.summary[dat.summary$sim.id == iteration.ids$sim.id[i.iter] &
+                                            dat.summary$gam.id == iteration.ids$gam.id[i.iter], ])
+    print("diagnostics:")
+    print(cur.nyear.original)
+    print((trend_fitter(dat.cur, nyear.min = nyear.min)))
     dat.cur = cbind(trend_fitter(dat.cur, nyear.min = nyear.min),
-                    data.frame(nyear.original = nrow(dat.summary[dat.summary$sim.id == iteration.ids$sim.id[i] &
-                                                                   dat.summary$gam.id == iteration.ids$gam.id[i], ]),
+                    data.frame(nyear.original = cur.nyear.original,
                                nyear.min = nyear.min,
                                nobs.min = nobs.min,
                                nnzero.min = nnzero.min,
                                bound.reasonable.rel = bound.reasonable.rel,
                                bound.reasonable.abs = bound.reasonable.abs,
-                               sim.id = iteration.ids$sim.id[i],
-                               gam.id = iteration.ids$gam.id[i]))
+                               sim.id = iteration.ids$sim.id[i.iter],
+                               gam.id = iteration.ids$gam.id[i.iter]))
     res.list[[list.ind]] = dat.cur; list.ind = list.ind + 1
   }
   dat.res = do.call(rbind, res.list)
@@ -210,12 +219,12 @@ trend_aggregator = function(dat.summary,
                                              nyear.min = nyear.min))
   trends.list = list()
   for(i.exclusion in 1:nrow(exclusion.methods)){
-  trends.list[[i.exclusion]] = trend_method(dat.summary = dat.summary,
-                            nobs.min = exclusion.methods$nobs.min[i.exclusion],
-                            nnzero.min = exclusion.methods$nnzero.min[i.exclusion],
-                            nyear.min = exclusion.methods$nyear.min[i.exclusion],
-                            bound.reasonable.rel = bound.reasonable.rel,
-                            bound.reasonable.abs = bound.reasonable.abs)
+    trends.list[[i.exclusion]] = trend_method(dat.summary = dat.summary,
+                                              nobs.min = exclusion.methods$nobs.min[i.exclusion],
+                                              nnzero.min = exclusion.methods$nnzero.min[i.exclusion],
+                                              nyear.min = exclusion.methods$nyear.min[i.exclusion],
+                                              bound.reasonable.rel = bound.reasonable.rel,
+                                              bound.reasonable.abs = bound.reasonable.abs)
   }
   trends.est = do.call(rbind, trends.list)
   unreasonable = dat.summary |>
