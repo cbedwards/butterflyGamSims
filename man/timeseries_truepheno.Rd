@@ -7,10 +7,9 @@
 timeseries_truepheno(activity.type, ...)
 }
 \arguments{
-\item{activity.type}{What type activity curve to model? Currently supports the
-Zonneveld model (\code{"zon"}),
-a simple gaussian activity curve (\code{"gauss"}), and a bivoltine activity curve based
-on two Gaussian curves (\code{"bivolt"}).}
+\item{activity.type}{What functional form to use for the underlying activity curves?
+Currently supports the Zonneveld model (\code{"zon"}), #' a simple gaussian activity curve (\code{"gauss"}),
+and a bivoltine activity curve based on two Gaussian curves (\code{"bivolt"}).}
 
 \item{...}{further arguments passed to the activity curves. See details.}
 }

@@ -18,9 +18,11 @@ activity_samp_zinb(activity.vec, ...)
 \arguments{
 \item{activity.vec}{Vector of the expected activity (see \code{?activity_gen} to generate these).}
 
-\item{sample.type}{Name of sampling distribution. Currently supported: Poisson (\code{"pois"}),
-negative binomial (\code{"nb"}), and zero-inflated negative binomial (\code{"zinb"}). "nb" and "zinb"
-will require additional parameters.}
+\item{sample.type}{Distribution to use when simulating censuses. The mean of this distribution
+is determined by the underlying activity curve, and this distribution (and associated parameters)
+determine the "sampling error" (doesn't need to strictly represent error in simulated observers).
+Currently supported: Poisson (\code{"pois"}), negative binomial (\code{"nb"}), and zero-inflated negative binomial (\code{"zinb"}).
+"nb" and "zinb" will require additional parameters (see details)}
 
 \item{...}{additional arguments for the sample scheme. See details}
 }

@@ -5,8 +5,10 @@
 #' Generally just feed in `$summary` component of the results of `gam_fitter`, with or without
 #' applying censorship filters.
 #'
-#' @param nyear.min Minimum number of years to use when fitting. If fewer years are provided,
-#' trends are returned as NA
+#' @param nyear.min Minimum number of years to use when fitting, after censoring years
+#' with insufficient data. If fewer years are provided trends are returned as NA. This value
+#' should be no greater than the length of the `years` argument, or no simulations will meet
+#' this criterion.
 #'
 #' @return 1-row data frame with linear trends across years for each metric. For abundance,
 #' `growth.rate` is the trend in log abundance across years. `$nyears` is the number of unique
@@ -80,8 +82,11 @@ trend_fitter = function(dat.filtered,
 #' `n`, `nzero`, `abund`, `onset`, `median`, `end`, `fp`, `boundary.reasonable.rel`, `boundary.reasonable.abs`,
 #' `sim.id`, and `gam.id`
 #' @param nobs.min Minimum number of total observations to include a year (REAL observations;
-#' anchors are not counted). This is only relevant if years vary in the number of sampling days
-#' @param nnzero.min Minimum number of non-zero observations to include a year
+#' anchors are not counted). This is only relevant if years vary in the number of sampling days.
+#' Note that in the current iteration with constant number of days sampled (the vector `doy.samples`),
+#' this should be no greater than the length of `doy.samples`.
+#' @param nnzero.min Minimum number of non-zero observations to include a year. This should be
+#' no greater than the length of doy.samples.
 #' @param bound.reasonable.rel Should we only use years with "good" fits as identified
 #' using bound.reasonable.rel? See `gam_summarizer` for details.
 #' @param bound.reasonable.abs Should we only use years with "good" fits as identified
@@ -163,8 +168,7 @@ trend_method = function(dat.summary,
 #'  and producing a data frame with all the pieces needed to evaluate the methods.
 #'
 #' @inheritParams trend_method
-#' @param gam.args
-#' @param timeseries
+#' @inheritParams gam_fitall
 #'
 #' @return Data frame including fitted trend summary (see `trend_method()`),
 #' summary of the number of "unreasonable" gam fits, the real underlying trends,
@@ -179,8 +183,7 @@ trend_method = function(dat.summary,
 #'
 #'
 #' @export
-#'
-#' @examples
+
 trend_aggregator = function(dat.summary,
                             gam.args,
                             timeseries,

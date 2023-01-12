@@ -2,7 +2,7 @@
 % Please edit documentation in R/timeseries_sim.R
 \name{timeseries_load}
 \alias{timeseries_load}
-\title{Title}
+\title{Read timeseries from files}
 \usage{
 timeseries_load(sim.name, path)
 }
@@ -19,7 +19,7 @@ used in each simulation (relevant for cases when one or more element of \code{si
 a 2-number vector, leading to uniform sampling of that parameter value).
 }
 \description{
-Title
+Read timeseries from files
 }
 \examples{
 # path.res = "G:/Dropbox/academia/research projects/butterfly-gam-sims/4_res"

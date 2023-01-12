@@ -21,18 +21,29 @@ Generally just feed in \verb{$summary} component of the results of \code{gam_fit
 \code{n}, \code{nzero}, \code{abund}, \code{onset}, \code{median}, \code{end}, \code{fp}, \code{boundary.reasonable.rel}, \code{boundary.reasonable.abs},
 \code{sim.id}, and \code{gam.id}}
 
-\item{timeseries}{}
+\item{gam.args}{Data frame, each row corresponding to a different set of gam method arguments.
+Must include columns \verb{$doy.smooth}, \verb{$doy.knots},\verb{$years.smooth},\verb{$anchor.flag}, \verb{$anchor.dist}.
+See \code{gam_fitter()} for details. \verb{$anchor.dist} can be any int when \verb{$anchor.flag==FALSE};
+I recommend using a large negative number to make it easy to catch mistakes.}
+
+\item{timeseries}{Collection of timeseries, including \verb{$years}, \verb{$doy}, \verb{$count}, and \verb{$sim.id}.
+Typically the \verb{$timeseries} output of \code{timeseries_sim()} or \code{timeseries_load()}. If speed is
+of particular concern, can pass the trimmed data frame (\code{timeseries_sim()} generates
+many more columns.)}
 
 \item{nobs.min}{Minimum number of total observations to include a year (REAL observations;
-anchors are not counted). This is only relevant if years vary in the number of sampling days}
+anchors are not counted). This is only relevant if years vary in the number of sampling days.
+Note that in the current iteration with constant number of days sampled (the vector \code{doy.samples}),
+this should be no greater than the length of \code{doy.samples}.}
 
-\item{nnzero.min}{Minimum number of non-zero observations to include a year}
+\item{nnzero.min}{Minimum number of non-zero observations to include a year. This should be
+no greater than the length of doy.samples.}
 
 \item{bound.reasonable.rel}{Should we only use years with "good" fits as identified
-using bount.reasonable.rel? See \code{gam_summarizer} for details.}
+using bound.reasonable.rel? See \code{gam_summarizer} for details.}
 
 \item{bound.reasonable.abs}{Should we only use years with "good" fits as identified
-using bount.reasonable.abs? See \code{gam_summarizer} for details.}
+using bound.reasonable.abs? See \code{gam_summarizer} for details.}
 }
 \value{
 Data frame including fitted trend summary (see \code{trend_method()}),

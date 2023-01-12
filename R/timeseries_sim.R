@@ -8,7 +8,7 @@
 #' parameters for the selected abundance type, activity type, and sample type.
 #' See details for full list of parameter names. Each sim.parm component can either take
 #' a single value (every simulation will use that value), or vector of the minimum and
-#' maximum desired valeus (each simulation will use a different value drawn from a uniform
+#' maximum desired values (each simulation will use a different value drawn from a uniform
 #' with those bounds).
 #'
 #' @return List of two dataframes, `$timeseries` and `$parms`. `$timeseries` contains all nsim

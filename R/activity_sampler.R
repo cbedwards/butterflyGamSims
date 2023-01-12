@@ -1,9 +1,11 @@
 #' Generate sample counts from expected activity
 #'
 #' @param activity.vec Vector of the expected activity (see `?activity_gen` to generate these).
-#' @param sample.type Name of sampling distribution. Currently supported: Poisson (`"pois"`),
-#' negative binomial (`"nb"`), and zero-inflated negative binomial (`"zinb"`). "nb" and "zinb"
-#' will require additional parameters.
+#' @param sample.type Distribution to use when simulating censuses. The mean of this distribution
+#' is determined by the underlying activity curve, and this distribution (and associated parameters)
+#' determine the "sampling error" (doesn't need to strictly represent error in simulated observers).
+#' Currently supported: Poisson (`"pois"`), negative binomial (`"nb"`), and zero-inflated negative binomial (`"zinb"`).
+#' "nb" and "zinb" will require additional parameters (see details)
 #'
 #' @param ... additional arguments for the sample scheme. See details
 #'

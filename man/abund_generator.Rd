@@ -18,8 +18,8 @@ For \code{abund_generator_exp()}, exponential growth/decline occurs between year
 so c(1,2,10) will give different results than c(1,2,3). For \code{abund_generator_rlnorm()},
 each year's value is IID.}
 
-\item{abund.type}{What type of variation in abundance to model. Currently supported:
-exponential growth (\code{"exp"}), log normal variation (\code{"rlnorm"}).}
+\item{abund.type}{What type of variation in abundance to model. Currently supported: deterministic
+exponential growth (\code{"exp"}), log normal random draws (\code{"rlnorm"}).}
 
 \item{...}{For \code{abund.type == "exp"}, needs \code{growth.rate} (yearly population growth rate) and \code{init.size} (abundance index in the first year).
 For our purposes, recommend a negative growth rate. For \code{abund.type == "rlnorm"},

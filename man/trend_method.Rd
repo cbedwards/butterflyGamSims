@@ -20,18 +20,21 @@ Generally just feed in \verb{$summary} component of the results of \code{gam_fit
 \code{sim.id}, and \code{gam.id}}
 
 \item{nobs.min}{Minimum number of total observations to include a year (REAL observations;
-anchors are not counted). This is only relevant if years vary in the number of sampling days}
+anchors are not counted). This is only relevant if years vary in the number of sampling days.
+Note that in the current iteration with constant number of days sampled (the vector \code{doy.samples}),
+this should be no greater than the length of \code{doy.samples}.}
 
-\item{nnzero.min}{Minimum number of non-zero observations to include a year}
+\item{nnzero.min}{Minimum number of non-zero observations to include a year. This should be
+no greater than the length of doy.samples.}
 
 \item{bound.reasonable.rel}{Should we only use years with "good" fits as identified
-using bount.reasonable.rel? See \code{gam_summarizer} for details.}
+using bound.reasonable.rel? See \code{gam_summarizer} for details.}
 
 \item{bound.reasonable.abs}{Should we only use years with "good" fits as identified
-using bount.reasonable.abs? See \code{gam_summarizer} for details.}
+using bound.reasonable.abs? See \code{gam_summarizer} for details.}
 }
 \value{
-1-row data frame with estimated trends (\code{growth.rate}, \code{median}, \code{onset},
+Data frame with estimated trends (\code{growth.rate}, \code{median}, \code{onset},
 \code{end}, \code{fp}), the number of years used to estimate the trends (\code{nyears}),
 the filtering criterion used to censor years before fitting trends (arguments for
 this function), and the original number of years before censoring (\code{nyear.original}))

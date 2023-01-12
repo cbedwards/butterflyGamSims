@@ -11,8 +11,10 @@ trend_fitter(dat.filtered, nyear.min)
 Generally just feed in \verb{$summary} component of the results of \code{gam_fitter}, with or without
 applying censorship filters.}
 
-\item{nyear.min}{Minimum number of years to use when fitting. If fewer years are provided,
-trends are returned as NA}
+\item{nyear.min}{Minimum number of years to use when fitting, after censoring years
+with insufficient data. If fewer years are provided trends are returned as NA. This value
+should be no greater than the length of the \code{years} argument, or no simulations will meet
+this criterion.}
 }
 \value{
 1-row data frame with linear trends across years for each metric. For abundance,
@@ -43,5 +45,5 @@ out = gam_fitter(years.vec = dat.sim$years,
 fit_plotter(dat.timeseries = dat.sim,
             dat.fitted = out$dat.fitted,
             activity.curve = out$activity.curve)
-trend_fitter(out$summary)
+trend_fitter(out$summary, nyear.min = 4)
 }

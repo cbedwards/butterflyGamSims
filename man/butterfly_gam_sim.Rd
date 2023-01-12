@@ -2,7 +2,7 @@
 % Please edit documentation in R/butterfly_gam_sim.R
 \name{butterfly_gam_sim}
 \alias{butterfly_gam_sim}
-\title{Title}
+\title{Run full simulation}
 \usage{
 butterfly_gam_sim(
   sim.name,
@@ -26,10 +26,93 @@ butterfly_gam_sim(
 )
 }
 \arguments{
-\item{gam.do}{}
+\item{sim.name}{Name for saving simulations of this combination of parameters}
+
+\item{path}{File path to save simulated data and results into}
+
+\item{nsims}{Number of simulations to carry out}
+
+\item{years}{Numeric vector of years for which which to simulate data}
+
+\item{doy.samples}{Numeric vector of day of years for which to simulate censusing.}
+
+\item{abund.type}{What type of variation in abundance to model. Currently supported: deterministic
+exponential growth (\code{"exp"}), log normal random draws (\code{"rlnorm"}).}
+
+\item{activity.type}{What functional form to use for the underlying activity curves?
+Currently supports the Zonneveld model (\code{"zon"}), #' a simple gaussian activity curve (\code{"gauss"}),
+and a bivoltine activity curve based on two Gaussian curves (\code{"bivolt"}).}
+
+\item{sample.type}{Distribution to use when simulating censuses. The mean of this distribution
+is determined by the underlying activity curve, and this distribution (and associated parameters)
+determine the "sampling error" (doesn't need to strictly represent error in simulated observers).
+Currently supported: Poisson (\code{"pois"}), negative binomial (\code{"nb"}), and zero-inflated negative binomial (\code{"zinb"}).
+"nb" and "zinb" will require additional parameters (see details)}
+
+\item{sim.parms}{list with named components matching each of the required additional
+parameters for the selected abundance type, activity type, and sample type.
+See details for full list of parameter names. Each sim.parm component can either take
+a single value (every simulation will use that value), or vector of the minimum and
+maximum desired values (each simulation will use a different value drawn from a uniform
+with those bounds).}
+
+\item{gam.args}{Data frame, each row corresponding to a different set of gam method arguments.
+Must include columns \verb{$doy.smooth}, \verb{$doy.knots},\verb{$years.smooth},\verb{$anchor.flag}, \verb{$anchor.dist}.
+See \code{gam_fitter()} for details. \verb{$anchor.dist} can be any int when \verb{$anchor.flag==FALSE};
+I recommend using a large negative number to make it easy to catch mistakes.}
+
+\item{nobs.min}{Minimum number of total observations to include a year (REAL observations;
+anchors are not counted). This is only relevant if years vary in the number of sampling days.
+Note that in the current iteration with constant number of days sampled (the vector \code{doy.samples}),
+this should be no greater than the length of \code{doy.samples}.}
+
+\item{nnzero.min}{Minimum number of non-zero observations to include a year. This should be
+no greater than the length of doy.samples.}
+
+\item{nyear.min}{Minimum number of years to use when fitting, after censoring years
+with insufficient data. If fewer years are provided trends are returned as NA. This value
+should be no greater than the length of the \code{years} argument, or no simulations will meet
+this criterion.}
+
+\item{bound.reasonable.rel}{Should we only use years with "good" fits as identified
+using bound.reasonable.rel? See \code{gam_summarizer} for details.}
+
+\item{bound.reasonable.abs}{Should we only use years with "good" fits as identified
+using bound.reasonable.abs? See \code{gam_summarizer} for details.}
+
+\item{append}{For debugging purposes only. Leave at default value of \code{FALSE}.}
+
+\item{timeseries.do}{For debugging purposes only. Leave at default value of \code{TRUE}}
+
+\item{gam.do}{For debugging purposes only. Leave at default value of \code{TRUE}}
+}
+\value{
+No object is returned, but a series of files are generated in \code{path/sim.name},
+which can be easily loaded with \code{butterfly_load}.
 }
 \description{
-Title
+This is the main user function for this package. \code{butterfly_gam_sim()} takes timeseries parameters,
+gam-fitting parameters, and censoring parameters, generates appropriate time series, fits
+those time series with appropriate gams, estimates phenology metrics and abundance index
+for each year, then looks for linear (log-linear in the case of abundance) trends across
+years after applying the appropriate filters of \code{nobs.min}, \code{nnzero.min}, \code{nyear.min}.
+Results are saved with a consistent file structure in the \code{sim.name} folder of the
+\code{path} directory. For easy access to these simulated files, see \code{butterfly_load()}.
+}
+\details{
+To allow simulations to capture a range of possible population patterns, activity curves and sampling
+distributions, \code{sim.parms} has variable requirements based on \code{sample.type}, \code{abund.type}, and \code{activity.type}.
+For \code{sample_type = "nb"}, theta must be included in \code{sim.parms}. For \code{sample_type = "zinb"},
+\code{theta} and \code{pzero} must be included in \code{sim.parms}.#' See \code{activity_sampler()} for details.
+
+For \code{activity.type = "gaus"}, \code{sim.parms} must include \code{act.mean} (peak day) and \code{act.sd} (peak width).
+For \code{"zon"}, \code{sim.parms} must include \code{zon.theta} (peak day), \code{beta} (spread), and \code{alpha} (death rate).
+For "bivolt", \code{sim.parms} must include \code{act.mean1} and \code{act.mean2} (peak days), \code{act.sd1} and
+\code{act.sd2} (peak widths), and \code{rel.size} (ratio of peak sizes). See \code{activity_gen()} for details.
+
+\code{sim.parms} must also contain information about the underlying population. For \code{abund.type = "exp"} (exponential growth),
+this means the initial abundance index \code{init.size} and the growth rate \code{growth.rate}. For \code{abund.type = "rlnorm"},
+(log-nromal random draws), this means \code{meanlog} and \code{sdlog}. See \code{abund_generator} for details.
 }
 \examples{
 #  path.res = "G:/Dropbox/academia/research projects/butterfly-gam-sims/4_res"
@@ -43,7 +126,7 @@ Title
 #                  act.mean = 130,
 #                  act.sd = 15,
 #                  theta = 5)
-# res = butterfly_gam_sim(sim.name = "full-kaboodle",
+# butterfly_gam_sim(sim.name = "full-kaboodle",
 #                   path = path.res,
 #                   nsims = 10,
 #                   years = 1990:2010,
@@ -56,4 +139,6 @@ Title
 #                   nobs.min = 5,
 #                   nnzero.min = 5,
 #                   nyear.min = 3)
+# res = butterfly_load(sim.name = "full-kaboodle",
+#                      path = path.res)
 }

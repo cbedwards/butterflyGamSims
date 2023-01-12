@@ -2,7 +2,7 @@
 % Please edit documentation in R/gam_fitall.R
 \name{gam_fitall_gen}
 \alias{gam_fitall_gen}
-\title{Helper funciton to run gam_fitall and save results in a systematic way.}
+\title{Helper function to run gam_fitall and save results in a systematic way.}
 \usage{
 gam_fitall_gen(sim.name, path, timeseries, gam.args, append = FALSE)
 }
@@ -28,7 +28,8 @@ of replacing them.}
 Saves csv of yearly estimates and gam-fitting parms
 }
 \description{
-Path and sim name should match those used in companion \code{timeseries_gen()} call.
+Path and sim name should match those used in companion \code{timeseries_gen()} call. Instead
+of returning fitted gam objects, saves them to file.
 }
 \examples{
 # path.res = "G:/Dropbox/academia/research projects/butterfly-gam-sims/4_res"

@@ -14,21 +14,22 @@ timeseries_generator(
 )
 }
 \arguments{
-\item{years}{Years  for which to simulate data}
+\item{years}{Numeric vector of years for which which to simulate data}
 
-\item{doy.samples}{Days of year to simulate observation events.}
+\item{doy.samples}{Numeric vector of day of years for which to simulate censusing.}
 
-\item{abund.type}{What type of variation in abundance to model. Currently supported:
-exponential growth (\code{"exp"}), log normal variation (\code{"rlnorm"}).}
+\item{abund.type}{What type of variation in abundance to model. Currently supported: deterministic
+exponential growth (\code{"exp"}), log normal random draws (\code{"rlnorm"}).}
 
-\item{activity.type}{What type activity curve to model? Currently supports the
-Zonneveld model (\code{"zon"}),
-a simple gaussian activity curve (\code{"gauss"}), and a bivoltine activity curve based
-on two Gaussian curves (\code{"bivolt"}).}
+\item{activity.type}{What functional form to use for the underlying activity curves?
+Currently supports the Zonneveld model (\code{"zon"}), #' a simple gaussian activity curve (\code{"gauss"}),
+and a bivoltine activity curve based on two Gaussian curves (\code{"bivolt"}).}
 
-\item{sample.type}{Name of sampling distribution. Currently supported: Poisson (\code{"pois"}),
-negative binomial (\code{"nb"}), and zero-inflated negative binomial (\code{"zinb"}). "nb" and "zinb"
-will require additional parameters.}
+\item{sample.type}{Distribution to use when simulating censuses. The mean of this distribution
+is determined by the underlying activity curve, and this distribution (and associated parameters)
+determine the "sampling error" (doesn't need to strictly represent error in simulated observers).
+Currently supported: Poisson (\code{"pois"}), negative binomial (\code{"nb"}), and zero-inflated negative binomial (\code{"zinb"}).
+"nb" and "zinb" will require additional parameters (see details)}
 
 \item{...}{additional arguments for the various timeseries generation functions. See details.}
 }

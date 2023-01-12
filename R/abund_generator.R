@@ -10,8 +10,8 @@
 #' For `abund_generator_exp()`, exponential growth/decline occurs between years,
 #' so c(1,2,10) will give different results than c(1,2,3). For `abund_generator_rlnorm()`,
 #' each year's value is IID.
-#' @param abund.type What type of variation in abundance to model. Currently supported:
-#' exponential growth (`"exp"`), log normal variation (`"rlnorm"`).
+#' @param abund.type What type of variation in abundance to model. Currently supported: deterministic
+#' exponential growth (`"exp"`), log normal random draws (`"rlnorm"`).
 #' @param ... For `abund.type == "exp"`, needs `growth.rate` (yearly population growth rate) and `init.size` (abundance index in the first year).
 #' For our purposes, recommend a negative growth rate. For `abund.type == "rlnorm"`,
 #' needs `meanlog` and `sdlog`, the mean and standard deviation of the normal distribution on a log scale.

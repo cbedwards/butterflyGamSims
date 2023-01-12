@@ -9,10 +9,9 @@
 #' @param abund.vec vector of abundance index associated with the year of each sampling event.
 #' Can generate with `abund_generator()`, note that it must be the same length as argument `doy`
 #' @param doy day of year of each sampling event
-#' @param activity.type What type activity curve to model? Currently supports the
-#' Zonneveld model (`"zon"`),
-#' a simple gaussian activity curve (`"gauss"`), and a bivoltine activity curve based
-#' on two Gaussian curves (`"bivolt"`).
+#' @param activity.type What functional form to use for the underlying activity curves?
+#' Currently supports the Zonneveld model (`"zon"`), #' a simple gaussian activity curve (`"gauss"`),
+#' and a bivoltine activity curve based on two Gaussian curves (`"bivolt"`).
 #' @param ... further arguments passed to the activity curves. See details.
 #'
 #' @return Numeric vector of expected activity for each observation event.

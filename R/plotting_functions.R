@@ -1,7 +1,7 @@
 #' Plot example timeseries
 #'
-#' @param years Years  for which to simulate data
-#' @param doy.samples Days of year to simulate observation events.
+#' @param years Numeric vector of years for which which to simulate data
+#' @param doy.samples Numeric vector of day of years for which to simulate censusing.
 #' @inheritParams abund_generator
 #' @inheritParams activity_gen
 #' @inheritParams activity_sampler
