@@ -27,6 +27,11 @@ this should be no greater than the length of \code{doy.samples}.}
 \item{nnzero.min}{Minimum number of non-zero observations to include a year. This should be
 no greater than the length of doy.samples.}
 
+\item{nyear.min}{Minimum number of years to use when fitting, after censoring years
+with insufficient data. If fewer years are provided trends are returned as NA. This value
+should be no greater than the length of the \code{years} argument, or no simulations will meet
+this criterion.}
+
 \item{bound.reasonable.rel}{Should we only use years with "good" fits as identified
 using bound.reasonable.rel? See \code{gam_summarizer} for details.}
 
@@ -44,30 +49,4 @@ Applies to all sim.id and gam.id separately
 }
 \examples{
 set.seed(10)
-dat.sim = timeseries_generator(years = 1990:2000,
-                               doy.samples = seq(105,160, by = 10),
-                               abund.type = "exp",
-                               activity.type = "gauss",
-                               sample.type = "pois",
-                               growth.rate = -0.12,
-                               init.size = 100,
-                               act.mean = 130,
-                               act.sd = 15)
-out = gam_fitter(years.vec = dat.sim$years,
-                 doy.vec = dat.sim$doy,
-                 count.vec = dat.sim$count,
-                 doy.smooth = "cr",
-                 doy.knots = 5,
-                 years.smooth = "cr",
-                 anchor.flag = TRUE,
-                 anchor.dist = 10
-)
-fit_plotter(dat.timeseries = dat.sim,
-            dat.fitted = out$dat.fitted,
-            activity.curve = out$activity.curve,
-            xlim = 20)
-trend_fitter(out$summary)
-trend_method(out$summary,
-             nobs.min = 0,
-             nnzero.min = 3)
 }

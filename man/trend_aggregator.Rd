@@ -39,6 +39,11 @@ this should be no greater than the length of \code{doy.samples}.}
 \item{nnzero.min}{Minimum number of non-zero observations to include a year. This should be
 no greater than the length of doy.samples.}
 
+\item{nyear.min}{Minimum number of years to use when fitting, after censoring years
+with insufficient data. If fewer years are provided trends are returned as NA. This value
+should be no greater than the length of the \code{years} argument, or no simulations will meet
+this criterion.}
+
 \item{bound.reasonable.rel}{Should we only use years with "good" fits as identified
 using bound.reasonable.rel? See \code{gam_summarizer} for details.}
 

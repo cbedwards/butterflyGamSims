@@ -91,6 +91,7 @@ trend_fitter = function(dat.filtered,
 #' using bound.reasonable.rel? See `gam_summarizer` for details.
 #' @param bound.reasonable.abs Should we only use years with "good" fits as identified
 #' using bound.reasonable.abs? See `gam_summarizer` for details.
+#' @inheritParams trend_fitter
 #'
 #' @return Data frame with estimated trends (`growth.rate`, `median`, `onset`,
 #' `end`, `fp`), the number of years used to estimate the trends (`nyears`),
@@ -100,32 +101,6 @@ trend_fitter = function(dat.filtered,
 #'
 #' @examples
 #' set.seed(10)
-#' dat.sim = timeseries_generator(years = 1990:2000,
-#'                                doy.samples = seq(105,160, by = 10),
-#'                                abund.type = "exp",
-#'                                activity.type = "gauss",
-#'                                sample.type = "pois",
-#'                                growth.rate = -0.12,
-#'                                init.size = 100,
-#'                                act.mean = 130,
-#'                                act.sd = 15)
-#' out = gam_fitter(years.vec = dat.sim$years,
-#'                  doy.vec = dat.sim$doy,
-#'                  count.vec = dat.sim$count,
-#'                  doy.smooth = "cr",
-#'                  doy.knots = 5,
-#'                  years.smooth = "cr",
-#'                  anchor.flag = TRUE,
-#'                  anchor.dist = 10
-#' )
-#' fit_plotter(dat.timeseries = dat.sim,
-#'             dat.fitted = out$dat.fitted,
-#'             activity.curve = out$activity.curve,
-#'             xlim = 20)
-#' trend_fitter(out$summary)
-#' trend_method(out$summary,
-#'              nobs.min = 0,
-#'              nnzero.min = 3)
 trend_method = function(dat.summary,
                         nobs.min,
                         nnzero.min,
@@ -226,10 +201,14 @@ trend_aggregator = function(dat.summary,
   trends.est = do.call(rbind, trends.list)
   unreasonable = dat.summary |>
     dplyr::group_by( .data[["sim.id"]]) |>
-    dplyr::summarise(unreasonable.rel = sum(!boundary.reasonable.rel),
-                     unreasonable.abs = sum(!boundary.reasonable.abs),
-                     unreasonable.all = sum(!boundary.reasonable.abs |
-                                              !boundary.reasonable.rel)) |>
+    # dplyr::summarise(unreasonable.rel = sum(!boundary.reasonable.rel),
+    #                  unreasonable.abs = sum(!boundary.reasonable.abs),
+    #                  unreasonable.all = sum(!boundary.reasonable.abs |
+    #                                           !boundary.reasonable.rel)) |>
+    dplyr::summarise(unreasonable.rel = sum(!.data[["boundary.reasonable.rel"]]),
+                     unreasonable.abs = sum(!.data[["boundary.reasonable.abs"]]),
+                     unreasonable.all = sum(!.data[["boundary.reasonable.rel"]] |
+                                              ! .data[["boundary.reasonable.abs"]])) |>
     dplyr::ungroup()
   res = dplyr::inner_join(trends.est, trends.true, by = "sim.id")
   res = dplyr::inner_join(res, unreasonable, by = "sim.id")
