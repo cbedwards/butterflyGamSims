@@ -15,11 +15,6 @@ knitr::opts_chunk$set(
 
 # butterflyGamSims
 
-<!-- badges: start -->
-
-<!-- badges: end -->
-
-The goal of butterflyGamSims is to determine reasonable protocols for fitting butterfly timeseries data with generalized additive models.
 
 ## Installation
 
@@ -30,83 +25,69 @@ You can install the development version of butterflyGamSims from [GitHub](https:
 devtools::install_github("cbedwards/butterflyGamSims")
 ```
 
-# Using this package: 
+## Description
+
+**butterflyGamSims** can be used to simulate butterfly transect data with known properties,
+fit possible generalized additive models to estimate activity curves, calculate abundance index and
+phenology metrics from these estimated activity curves, and using one or more data filtering
+protocols, estimate across-year trends in abundance and phenology. My primary motivation for creating this package was to compare estimated and real trends in abundance and phenology for a range of gam approaches and data censoring options to identify potential biases when fitting real data. In particular, in exploring real data, I found that for sufficiently sparse data in which abundance declined across a time series, apparent trends in phenology became unreliable without 
+some form of removing years with insufficient data. This package allows systematic exploration of
+*what* rules for removing data are sufficient to avoid notable bias.
+
+For this purpose, `butterfly_gam_sim()` and `butterfly_load()` are the key functions.
+`butterfly_gam_sim()` takes all the arguments needed to define the data to be simulated,
+the gam-fitting parameters, and the data filtering protocol. See `?butterfly_gam_sim` for details on all the arguments (and a working example). `butterfly_load()` reads in the files saved by a
+run of `butterfly_gam_sim()` and organizes them into a single list; `?butterfly_load` contains
+all the relevant information for interpretting the simulated time series, estimated yearly metrics,
+and estimated trends.
+
+Because **butterflyGamSims** necessarily simulates butterfly time series data, the 
+timeseries simulation function `timeseries_sim()` may be helpful for other projects (ie
+simulated data for teaching/training, other methods testing projects).
+Note that `timeseries_sim()` returns a set of simulated time series; depending on your needs,`timeseries_gen()` (which saves them to a file) may be more helpful.
+
+For visualizing simulated timeseries and associated fitted gam models, `timeseries_examples()` and `fit_plotter()` may be helpful. As a simple example, 
+here we simulate a 10-year time series with a gaussian underlying activity curve centered
+on day 130 with standard deviation 15, a starting abundance index of 500, a moderate
+exponential decline in population across years, and 7 census per year with poisson sampling error.
+
+```{r}
+library(butterflyGamSims)
+timeseries_examples(years = 1990:2000,
+                    doy.samples = seq(105,160, by = 7),
+                    abund.type = "exp",
+                    activity.type = "gauss",
+                    sample.type = "pois",
+                    growth.rate = -0.12,
+                    init.size = 500,
+                    act.mean = 130,
+                    act.sd = 15)
+```
 
 
-# Project structure (internal use/trakcing)
+And here we fit a similar timeseries with a simple gam (using a tensor product smooth with a cubic regression smooth in both the day-of-year and the year dimensions),
 
-## Overview
+```{r}
+dat.sim = timeseries_generator(years = 1990:2000,
+                               doy.samples = seq(105,160, by = 7),
+                               abund.type = "exp",
+                               activity.type = "gauss",
+                               sample.type = "pois",
+                               growth.rate = -0.12,
+                               init.size = 500,
+                               act.mean = 130,
+                               act.sd = 15)
+out = gam_fitter(years.vec = dat.sim$years,
+                 doy.vec = dat.sim$doy,
+                 count.vec = dat.sim$count,
+                 doy.smooth = "cr",
+                 doy.knots = 5,
+                 years.smooth = "cr",
+                 anchor.flag = FALSE
+)
+fit_plotter(dat.timeseries = dat.sim,
+            dat.fitted = out$dat.fitted,
+            activity.curve = out$activity.curve)
+```
 
-Simulate time series data from known yearly activity curves that change across years in some predetermined fashion. Actual data will be counts simulated from some probability distribution with mean determined by the activity curve for that day, with the days of observation provided as parameters.
 
-## Parameters
-
-## Key experimental designs / questions to explore/
-
-## Code structure
-
-### Time series simulation
-
-In combination, the following functions simulate a time series:
-
-#### Function to generate yearly population abundance index
-
-`abund_generator.R` contains two functions for this.
-
-#### Function to generate activity curve in each year
-
-`activity_gen()`
-
-#### Function to sample activity curve in each year
-
-`activity_sampler()`
-
-#### Function to calc actual pheno + abund metrics for each year from activity curve
-
-`gam_summarizer` feeds into `timeseries_truepheno`, which feeds into `timeseries_generator`. The end result is that `timeseries_generator` provides the "correct" answers for abundance index (not accounting for 0s when using `sample.type="zinb"`) and phenology metrics.
-
-#### Function to plot example time series
-
-`timeseries_example`.
-
-### Analysis
-
-In combination, the following functions calculate metrics from a single time series
-
-#### Function to fit time series data with gam model
-
-`gam_fitter`
-
-Note: want to be able to toggle on/off the use of anchors, the use of different gam structures
-
-#### Function to generate yearly metrics from FITTED activity curve
-
-See `gam_summarizer`. Note that this also does basic "badfit" diagnostics in the form of `boundary.reasonable.rel` and `boundary.reasonable.abs`.
-
-`gam_summarize_all` applies `gam_summarizer` to all years.
-
-This is all called within `gam_fitter`.
-
-#### Function to fit across-year trends
-
-Note: here we want to be able to try several criterion for avoiding bias, including excluding some site-years for phenology trends based on number of non-zero observations.
-
-#### function to integrate the above for a given timeseries
-
-### Simulating
-
-Paralellized function to call the time series simulation and the analyses. Propose saving the time series as CSV(s?) as well. Generate a few example plots of the time series, and time series with fits.
-
-Summarize effectiveness of gam fit: average error in abundance, phenology measures. Bias in same.
-
-#### Function to produce example plots of time series and fits
-
-#### Function to summarize error and bias.
-
-#### Function to create summary graphs
-
-#### Save results in a meaningful way
-
-#### Save parameters as metadata as well.
-
-### 
