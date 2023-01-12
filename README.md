@@ -5,8 +5,8 @@
 
 ## Installation
 
-You can install the development version of butterflyGamSims from
-[GitHub](https://github.com/) with:
+You can install butterflyGamSims from [GitHub](https://github.com/)
+with:
 
 ``` r
 # install.packages("devtools")
