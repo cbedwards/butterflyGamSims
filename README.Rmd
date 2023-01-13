@@ -108,6 +108,7 @@ fit_plotter(dat.timeseries = dat.sim,
 For those who are not familiar, generalized additive models are powerful, but their implementation and interpretation can be a bit tricky. I use the fantastic R package [**mgcv**](https://cran.r-project.org/web/packages/mgcv/index.html) by Simon Wood ([Wood 2017](https://doi.org/10.1201/9781315370279)). For anyone looking to learn how to use this package, I *highly*  recommend [Noam Ross](https://github.com/noamross)'s [free online course in fitting smoothing splines with MGCV](https://noamross.github.io/gams-in-r-course/).
 
 As a starting point for working with potentially sparse transect data, I recommend using a tensor product smooth across day of year ("doy") and year, which can be specified with the term `te(doy, year)`. The tensor product smooth across doy and year is representing our expectation that
+
 - activity curves within a year will be smooth (smoothing across doy)
 - sequential years should have relatively similar abundances (smoothing across year)
 - sequential years  should have relatively similar phenologies and shapes of activity curves (the interaction part of `te()`)

@@ -191,12 +191,13 @@ MGCV](https://noamross.github.io/gams-in-r-course/).
 As a starting point for working with potentially sparse transect data, I
 recommend using a tensor product smooth across day of year (“doy”) and
 year, which can be specified with the term `te(doy, year)`. The tensor
-product smooth across doy and year is representing our expectation
-that - activity curves within a year will be smooth (smoothing across
-doy) - sequential years should have relatively similar abundances
-(smoothing across year) - sequential years should have relatively
-similar phenologies and shapes of activity curves (the interaction part
-of `te()`)
+product smooth across doy and year is representing our expectation that
+
+- activity curves within a year will be smooth (smoothing across doy)
+- sequential years should have relatively similar abundances (smoothing
+  across year)
+- sequential years should have relatively similar phenologies and shapes
+  of activity curves (the interaction part of `te()`)
 
 The default for a 2-dimensional smooth in mgcv is `s(doy, year)`, but
 this assumes that wiggliness will be the same in both dimensions (here
