@@ -50,7 +50,7 @@ trend_fitter = function(dat.filtered,
   }else{
 
     ## abundance trend (log)
-    dat.filtered$logabund=log(dat.filtered$abund)
+    dat.filtered$logabund=log(dat.filtered$abund+1)
     out = stats::lm(logabund ~ years, data=dat.filtered)
     res.cur$growth.rate = stats::coef(out)[2]
 
