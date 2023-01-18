@@ -118,6 +118,7 @@ gam_fitall_load = function(sim.name,
   path.use = paste0(path, "/", sim.name)
   print(path.use)
   yearly.estimates = data.table::fread(paste0(path.use,"/gam-yearly.estimates.csv"))
+  yearly.estimates$abund = as.numeric(yearly.estimates$abund)
   gam.args = data.table::fread(paste0(path.use,"/gam-parms.csv"))
   return(list(yearly.estimates = yearly.estimates,
               gam.args = gam.args))
