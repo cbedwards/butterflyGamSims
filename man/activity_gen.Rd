@@ -50,7 +50,11 @@ second peak has half the size of the first, \code{rel.size = 10} means the secon
 not change the overall abundance.
 
 For the Zonneveld model,
-peak emergence time (\code{zon.theta}), spread in emerge times (\code{beta}), and death rate (\code{alpha}).
+peak emergence time RELATIVE TO t=0 (\code{zon.theta}), the time t=0 at which butterfly activity is 0 (\code{t0}),
+spread in emerge times (\code{beta}), and death rate (\code{alpha}). Note that separating the phenology like this,
+with mean peak activity on doy \code{t0+zon.theta} may seem unnecessarily complicated, but given
+the implementation of the zonneveld method using numerical simulations of ODEs, this is
+necessary to capture model behavior correctly.
 These parameters
 and the activity curve are taken from Zonneveld et al. 2003. For normal use of this
 model,
@@ -90,13 +94,14 @@ dat.detail$proj = activity_gen(abund.vec = dat.detail$abund,
 #   facet_wrap(~years)
 
   #Replicating figure 1a from Zonneveld et al. 2003
-  dat.test = data.frame(doy = seq(0,50, by =.1))
+  dat.test = data.frame(doy = seq(90,130, by =.1))
 dat.test$abund = 55.1/0.096
 
 dat.test$act = activity_gen(abund.vec = dat.test$abund,
                                 doy = dat.test$doy,
                                 activity.type = "zon",
                                 zon.theta = 11.1,
+                                t0=100,
                                 beta = 2.7,
                                 alpha = 0.096)
 plot(dat.test$doy, dat.test$act, type='l')

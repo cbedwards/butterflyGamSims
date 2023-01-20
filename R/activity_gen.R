@@ -31,7 +31,11 @@
 #' not change the overall abundance.
 #'
 #' For the Zonneveld model,
-#' peak emergence time (`zon.theta`), spread in emerge times (`beta`), and death rate (`alpha`).
+#' peak emergence time RELATIVE TO t=0 (`zon.theta`), the time t=0 at which butterfly activity is 0 (`t0`),
+#'  spread in emerge times (`beta`), and death rate (`alpha`). Note that separating the phenology like this,
+#'  with mean peak activity on doy `t0+zon.theta` may seem unnecessarily complicated, but given
+#'  the implementation of the zonneveld method using numerical simulations of ODEs, this is
+#'  necessary to capture model behavior correctly.
 #' These parameters
 #' and the activity curve are taken from Zonneveld et al. 2003. For normal use of this
 #' model,
@@ -72,13 +76,14 @@
 #' #   facet_wrap(~years)
 #'
 #'   #Replicating figure 1a from Zonneveld et al. 2003
-#'   dat.test = data.frame(doy = seq(0,50, by =.1))
+#'   dat.test = data.frame(doy = seq(90,130, by =.1))
 #' dat.test$abund = 55.1/0.096
 #'
 #' dat.test$act = activity_gen(abund.vec = dat.test$abund,
 #'                                 doy = dat.test$doy,
 #'                                 activity.type = "zon",
 #'                                 zon.theta = 11.1,
+#'                                 t0=100,
 #'                                 beta = 2.7,
 #'                                 alpha = 0.096)
 #' plot(dat.test$doy, dat.test$act, type='l')
@@ -98,7 +103,6 @@ activity_gen = function(abund.vec,
 
 ## helper function for zonneveld model
 zon_fun=function(t,y,parms) {
-  # This function is based on the Lotka-Volterra competition model
   #state variables:
   x=y[1]
   # Parameters:
@@ -116,20 +120,31 @@ activity_gen_zon = function(abund.vec, doy, ...){
   parms.opt = list(...)
   stopifnot("zon.theta" %in% names(parms.opt),
             "beta" %in% names(parms.opt),
-            "alpha" %in% names(parms.opt))
+            "alpha" %in% names(parms.opt),
+            "t0" %in% names(parms.opt))
   stopifnot(parms.opt$zon.theta>0,
             parms.opt$beta>0,
-            parms.opt$alpha>=0
+            parms.opt$alpha>=0,
+            parms.opt$t0>=0,
+            parms.opt$t0<366
   )
   ## we need to streamline for odesolver, then merge back in and account for abund.vec
-  dat.sub = data.frame(abund = abund.vec, doy = doy)
-  doy.use = sort(unique(doy))
+  ## we also need to NOT use negative time values
+  dat.sub = data.frame(abund = abund.vec, doy = doy-parms.opt$t0)
+  doy.use = sort(unique(doy-parms.opt$t0))
+  doy.use = doy.use[doy.use>0]
+  if(length(doy.use)>0){
   parms.opt$N = 100*parms.opt$alpha #increasing by 100 for numerics reasons
   out.lsoda = data.frame(deSolve::lsoda(0, c(0, doy.use), zon_fun, parms.opt)[-1,])
   names(out.lsoda) = c("doy", "act.raw")
   dat.sub = dplyr::left_join(dat.sub, out.lsoda, by = "doy")
+  dat.sub$act.raw[dat.sub$doy<=0] = 0
   dat.sub$act = dat.sub$act.raw / 100 * dat.sub$abund ## canceling out the 100 from above
-  return(dat.sub$act.raw)
+  }else{
+    cat("Warning: No sampling before t0 of Zonneveld distribution")
+    dat.sub$act = 0
+  }
+  return(dat.sub$act)
 }
 
 #' @rdname activity_gen

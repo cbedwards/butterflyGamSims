@@ -106,7 +106,8 @@ For \code{sample_type = "nb"}, theta must be included in \code{sim.parms}. For \
 \code{theta} and \code{pzero} must be included in \code{sim.parms}.#' See \code{activity_sampler()} for details.
 
 For \code{activity.type = "gaus"}, \code{sim.parms} must include \code{act.mean} (peak day) and \code{act.sd} (peak width).
-For \code{"zon"}, \code{sim.parms} must include \code{zon.theta} (peak day), \code{beta} (spread), and \code{alpha} (death rate).
+For \code{"zon"}, \code{sim.parms} must include \code{zon.theta} (peak day relative to day 0), \code{t0} (the "initial" day of the zonneveld model,
+which is the final day that populations are 0), \code{beta} (spread), and \code{alpha} (death rate).
 For "bivolt", \code{sim.parms} must include \code{act.mean1} and \code{act.mean2} (peak days), \code{act.sd1} and
 \code{act.sd2} (peak widths), and \code{rel.size} (ratio of peak sizes). See \code{activity_gen()} for details.
 

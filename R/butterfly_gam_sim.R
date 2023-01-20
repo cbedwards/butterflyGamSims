@@ -26,7 +26,8 @@
 #' `theta` and `pzero` must be included in `sim.parms`.#' See `activity_sampler()` for details.
 #'
 #' For `activity.type = "gaus"`, `sim.parms` must include `act.mean` (peak day) and `act.sd` (peak width).
-#' For `"zon"`, `sim.parms` must include `zon.theta` (peak day), `beta` (spread), and `alpha` (death rate).
+#' For `"zon"`, `sim.parms` must include `zon.theta` (peak day relative to day 0), `t0` (the "initial" day of the zonneveld model,
+#' which is the final day that populations are 0), `beta` (spread), and `alpha` (death rate).
 #' For "bivolt", `sim.parms` must include `act.mean1` and `act.mean2` (peak days), `act.sd1` and
 #' `act.sd2` (peak widths), and `rel.size` (ratio of peak sizes). See `activity_gen()` for details.
 #'
