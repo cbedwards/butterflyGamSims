@@ -13,6 +13,7 @@ gam_fitter(
   years.smooth,
   anchor.flag,
   anchor.dist = NULL,
+  limit.to.anchor = FALSE,
   ...
 )
 }
@@ -48,6 +49,9 @@ some number of days before and after}
 \item{anchor.dist}{How many days out from the real data should anchor zeroes be added? Defaults to NULL,
 must be an integer if \code{anchor.dist==TRUE}.}
 
+\item{limit.to.anchor}{For calculating metrics of the fitted gams, do we want to limit our calculations to only the time period between the anchors?
+If \code{TRUE}, and \code{anchor.flag = FALSE},  calculations will use only the period of time between the first and last observed data points.}
+
 \item{...}{additional arguments for identifying reasonable model fits. See \code{?gam_summarizer}}
 }
 \value{
@@ -68,6 +72,10 @@ Fitting timeseries data with different gam fitting options
 \code{gam_fitter} fits the data using a tensor product smooth, with potentially different basis functions
 for the doy and year dimensions. Fitting uses restricted maximum likelihood (\code{methods = "REML"} in \code{gam()}) and
 a negative binomial distribution (\code{family = "nb"} in \code{gam()}).
+
+Note that in general we have found that using anchor zeroes improves model fit and reduces bias. Additionally, we expect that the "limit.to.anchor" should be TRUE.
+Most butterflies are active for brief periods in the year, and spline predictions outside of those ranges are biologically meaningless, but given how
+splines can work (especially 2-dimensional splines with changing population abundances), these extrapolations can qualitatively change predictions. We leave the limit.to.anchor as an argument (and have it default to FALSE) for the purposes of unit tests.
 }
 \examples{
 dat.sim = timeseries_generator(years = 1990:2000,

@@ -1,7 +1,7 @@
 #' Summarizing activity curve of single year
 #'
 #' Dev note: potentially this could work across years with judicious use of dplyr `group_by` and `summarize`,
-#' but implementation is non-obvious (to me) for checking reasonable fit using hte "bounds.reasonable" framework.
+#' but implementation is non-obvious (to me) for checking reasonable fit using the "bounds.reasonable" framework.
 #'  Revisit for speed if needed, and modify gam_summarize_all accordingly.
 #'
 #'
@@ -97,6 +97,7 @@ gam_summarizer=function(count.pred,
 #' withing `gam_fitter()`
 #' @param ... `"bounds.reasonable"`, "`bounds.thresh.rel"`, and `"bounds.thresh.abs"` can
 #' be specified here to pass on to `gam_summarizer()`.
+#' @inheritParams gam_fitter
 #'
 #' @returns Data frame with summary metrics for each year. see `gam_summarizer()` for details.
 #'
@@ -106,7 +107,11 @@ gam_summarizer=function(count.pred,
 #' Note: this is a bit fragile, and sensitive to changes in what `gam_summarizer` outputs.
 #' Not sure if that's worth working around though. Leaving for now.
 #'
-gam_summarize_all = function(activity.curve,...){
+gam_summarize_all = function(activity.curve,
+                             anchor.flag,
+                             anchor.dist,
+                             limit.to.anchor,
+                             ...){
   parms.opt = list(...)
   stopifnot(names(parms.opt) %in% c("bounds.reasonable",
                                     "bounds.thresh.rel",

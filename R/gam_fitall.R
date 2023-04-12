@@ -50,7 +50,7 @@ gam_fitall = function(timeseries,
                       gam.args){
   stopifnot(is.data.frame(gam.args))
   stopifnot(all(names(gam.args) %in%
-                  c("doy.smooth","doy.knots", "years.smooth","anchor.flag","anchor.dist")))
+                  c("doy.smooth","doy.knots", "years.smooth","anchor.flag","anchor.dist", "limit.to.anchor")))
 
   gamfits.list = list()
   list.ind = 1

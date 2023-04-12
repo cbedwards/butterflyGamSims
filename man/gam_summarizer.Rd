@@ -37,7 +37,7 @@ in log abundance.
 }
 \description{
 Dev note: potentially this could work across years with judicious use of dplyr \code{group_by} and \code{summarize},
-but implementation is non-obvious (to me) for checking reasonable fit using hte "bounds.reasonable" framework.
+but implementation is non-obvious (to me) for checking reasonable fit using the "bounds.reasonable" framework.
 Revisit for speed if needed, and modify gam_summarize_all accordingly.
 }
 \details{

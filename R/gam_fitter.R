@@ -23,11 +23,17 @@
 #' some number of days before and after
 #' @param anchor.dist How many days out from the real data should anchor zeroes be added? Defaults to NULL,
 #' must be an integer if `anchor.dist==TRUE`.
+#' @param limit.to.anchor For calculating metrics of the fitted gams, do we want to limit our calculations to only the time period between the anchors?
+#' If `TRUE`, and `anchor.flag = FALSE`,  calculations will use only the period of time between the first and last observed data points.
 #' @param ... additional arguments for identifying reasonable model fits. See `?gam_summarizer`
 #'
 #' @details `gam_fitter` fits the data using a tensor product smooth, with potentially different basis functions
 #' for the doy and year dimensions. Fitting uses restricted maximum likelihood (`methods = "REML"` in `gam()`) and
 #' a negative binomial distribution (`family = "nb"` in `gam()`).
+#'
+#' Note that in general we have found that using anchor zeroes improves model fit and reduces bias. Additionally, we expect that the "limit.to.anchor" should be TRUE.
+#' Most butterflies are active for brief periods in the year, and spline predictions outside of those ranges are biologically meaningless, but given how
+#' splines can work (especially 2-dimensional splines with changing population abundances), these extrapolations can qualitatively change predictions. We leave the limit.to.anchor as an argument (and have it default to FALSE) for the purposes of unit tests.
 #'
 #' @return List with four components. `$summary` is a data frame frame with estimated attributes for
 #' each fitted year. See `gam_summarizer()` for details on most columns. Two additional columns are added.
@@ -68,6 +74,7 @@ gam_fitter = function(years.vec,
                       years.smooth,
                       anchor.flag,
                       anchor.dist = NULL,
+                      limit.to.anchor = FALSE,
                       ...){
   stopifnot(is.numeric(years.vec),
             is.numeric(doy.vec),
@@ -135,6 +142,16 @@ gam_fitter = function(years.vec,
   activity.curve$act = mgcv::predict.gam(out, activity.curve, type = "response")
   names(activity.curve)[names(activity.curve)=="years.use"] = "years"
 
+  ## okay, now cut out values outside of the anchor range, if using that.
+  ##
+  if(limit.to.anchor){
+    lims.dat = range(dat.fit$doy)
+    if(anchor.flag){
+      lims.dat = lims.dat + c(-anchor.dist, anchor.dist)
+    }
+    activity.curve = activity.curve[activity.curve$doy >= lims.dat[1] & activity.curve$doy <= lims.dat[2],]
+  }
+
   dat.sum = gam_summarize_all(activity.curve,
                               ...)
 
@@ -147,7 +164,8 @@ gam_fitter = function(years.vec,
                                  doy.knots = doy.knots,
                                  years.smooth = years.smooth,
                                  anchor.flag = anchor.flag,
-                                 anchor.dist = ifelse(is.null(anchor.dist), NA, anchor.dist))))
+                                 anchor.dist = ifelse(is.null(anchor.dist), NA, anchor.dist),
+                                 limit.to.anchor = limit.to.anchor)))
 }
 
 

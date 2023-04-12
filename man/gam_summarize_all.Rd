@@ -4,11 +4,29 @@
 \alias{gam_summarize_all}
 \title{Estimate metrics for full activity curve}
 \usage{
-gam_summarize_all(activity.curve, ...)
+gam_summarize_all(
+  activity.curve,
+  anchor.flag,
+  anchor.dist,
+  limit.to.anchor,
+  ...
+)
 }
 \arguments{
 \item{activity.curve}{data frame with \verb{$years}, \verb{$doy}, and \verb{$act}, typically generated
 withing \code{gam_fitter()}}
+
+\item{anchor.flag}{Logical. Should add "anchor" zeroes (additional dummy observations with 0 counts) be added to each
+year of data to help prevent unreasonable behavior outside of observed range. If TRUE, two additional observations are added
+to each year, \code{anchor.dist} days before the first doy of observation in the data set, and
+\code{anchor.dist} days after the last doy of observation in the data set.
+some number of days before and after}
+
+\item{anchor.dist}{How many days out from the real data should anchor zeroes be added? Defaults to NULL,
+must be an integer if \code{anchor.dist==TRUE}.}
+
+\item{limit.to.anchor}{For calculating metrics of the fitted gams, do we want to limit our calculations to only the time period between the anchors?
+If \code{TRUE}, and \code{anchor.flag = FALSE},  calculations will use only the period of time between the first and last observed data points.}
 
 \item{...}{\code{"bounds.reasonable"}, "\verb{bounds.thresh.rel"}, and \code{"bounds.thresh.abs"} can
 be specified here to pass on to \code{gam_summarizer()}.}
