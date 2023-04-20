@@ -133,6 +133,7 @@ gam_fitall_par = function(timeseries,
     return(yearly.df)
   }
   stopCluster(c1)
+  print(lapply(gamfits.list))
   gam.args$gam.id = 1:nrow(gam.args)
   gamfits.df = do.call(rbind, gamfits.list)
   return(list(yearly.estimates = gamfits.df, gam.args = gam.args))
