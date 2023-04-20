@@ -4,7 +4,14 @@
 \alias{gam_fitall_gen}
 \title{Helper function to run gam_fitall and save results in a systematic way.}
 \usage{
-gam_fitall_gen(sim.name, path, timeseries, gam.args, append = FALSE)
+gam_fitall_gen(
+  sim.name,
+  path,
+  timeseries,
+  gam.args,
+  nthreads = NULL,
+  append = FALSE
+)
 }
 \arguments{
 \item{sim.name}{Name of this simulation instance.}
@@ -20,6 +27,9 @@ many more columns.)}
 Must include columns \verb{$doy.smooth}, \verb{$doy.knots},\verb{$years.smooth},\verb{$anchor.flag}, \verb{$anchor.dist}.
 See \code{gam_fitter()} for details. \verb{$anchor.dist} can be any int when \verb{$anchor.flag==FALSE};
 I recommend using a large negative number to make it easy to catch mistakes.}
+
+\item{nthreads}{Defaults to NULL. If an integer, gam_fitall_gen will call a parallelized version of
+the gam fitting function (\code{gam_fitall_par()}), which will use \code{nthread} threads to fit gams in parallel.}
 
 \item{append}{Defaults to FALSE. If true, add results to existing gam fits csvs instead
 of replacing them.}

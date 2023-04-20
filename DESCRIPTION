@@ -18,8 +18,11 @@ Config/testthat/edition: 3
 Imports: 
     data.table,
     deSolve,
+    doParallel,
     dplyr,
+    foreach,
     ggplot2,
+    iterators,
     MASS,
     mgcv,
     rlang

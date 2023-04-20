@@ -18,6 +18,7 @@ butterfly_gam_sim(
   nobs.min,
   nnzero.min,
   nyear.min,
+  nthreads = NULL,
   bound.reasonable.rel = F,
   bound.reasonable.abs = F,
   append = FALSE,
@@ -73,6 +74,9 @@ no greater than the length of doy.samples.}
 with insufficient data. If fewer years are provided trends are returned as NA. This value
 should be no greater than the length of the \code{years} argument, or no simulations will meet
 this criterion.}
+
+\item{nthreads}{Defaults to NULL. If an integer, gam_fitall_gen will call a parallelized version of
+the gam fitting function (\code{gam_fitall_par()}), which will use \code{nthread} threads to fit gams in parallel.}
 
 \item{bound.reasonable.rel}{Should we only use years with "good" fits as identified
 using bound.reasonable.rel? See \code{gam_summarizer} for details.}

@@ -13,7 +13,7 @@
 #' @param nsims Number of simulations to carry out
 #' @inheritParams timeseries_examples
 #' @inheritParams timeseries_sim
-#' @inheritParams gam_fitall
+#' @inheritParams gam_fitall_gen
 #' @inheritParams trend_fitter
 #' @inheritParams trend_method
 #' @param append For debugging purposes only. Leave at default value of `FALSE`.
@@ -54,6 +54,7 @@ butterfly_gam_sim = function(sim.name,
                              nobs.min,
                              nnzero.min,
                              nyear.min,
+                             nthreads = NULL,
                              bound.reasonable.rel = F,
                              bound.reasonable.abs = F,
                              append = FALSE,
@@ -81,7 +82,9 @@ butterfly_gam_sim = function(sim.name,
                    path = path,
                    dat.timeseries$timeseries,
                    gam.args = gam.args,
-                   append = append)
+                   nthreads = nthreads,
+                   append = append
+                   )
   }
   dat.gamfits = gam_fitall_load(sim.name = sim.name,
                                 path = path)
