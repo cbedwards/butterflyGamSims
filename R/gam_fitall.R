@@ -163,7 +163,7 @@ gam_fitall_gen = function(sim.name,
                           append = FALSE){
   stopifnot(is.character(path),
             is.character(sim.name),
-            is.null(nthreads) | (is.integer(nthreads) & nthreads > 0 & nthreads %%1 == 0))
+            is.null(nthreads) | (is.numeric(nthreads) & nthreads > 0 & nthreads %%1 == 0))
   path.use = paste0(path, "/", sim.name)
   if(is.null(nthreads)){
   out.fit = gam_fitall(timeseries, gam.args)
