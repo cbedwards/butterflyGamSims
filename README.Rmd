@@ -27,6 +27,10 @@ devtools::install_github("cbedwards/butterflyGamSims")
 
 ## Description
 
+### Update Notes
+
+As of 4/20/23, **butterflyGamSims** now supports parallel processing using the doPar workflow. This has been implemented for the gam-fitting steps (which are by far the most time-consuming). The optional `nthreads` argument can be set to the number of threads desired to initiate parallel processing. At default (`nthreads = NULL`), code will continue to use serial processing as before.
+
 ### Motivation
 
 In ecology and in conservation biology, understanding the population trends and timing of activity ("phenology") for insects is an ongoing interest / concern. Particularly in the context of climate change, ecologists are interested in identifying trends in phenology (IE populations shifting to become
@@ -49,10 +53,7 @@ My primary motivation for creating this package was to compare estimated and rea
 
 For this purpose, `butterfly_gam_sim()` and `butterfly_load()` are the key functions.
 `butterfly_gam_sim()` takes all the arguments needed to define the data to be simulated,
-the GAM-fitting parameters, and the data filtering protocol. See `?butterfly_gam_sim` for details on all the arguments (and a simple example). `butterfly_load()` reads in the files saved by a
-run of `butterfly_gam_sim()` and organizes them into a single list; `?butterfly_load` contains
-all the relevant information for interpreting the simulated time series, estimated yearly metrics,
-and estimated trends.
+the GAM-fitting parameters, and the data filtering protocol. See `?butterfly_gam_sim` for details on all the arguments (and a simple example). `butterfly_load()` reads in the files saved by a run of `butterfly_gam_sim()` and organizes them into a single list; `?butterfly_load` contains all the relevant information for interpreting the simulated time series, estimated yearly metrics, and estimated trends.
 
 Because **butterflyGamSims** necessarily simulates butterfly time series data, the 
 time-series simulation function `timeseries_sim()` may be helpful for other projects (IE

@@ -102,18 +102,15 @@ gam_fitall_par = function(timeseries,
   stopifnot(is.data.frame(gam.args))
   stopifnot(all(names(gam.args) %in%
                   c("doy.smooth","doy.knots", "years.smooth","anchor.flag","anchor.dist", "limit.to.anchor")))
-
-  gamfits.list = list()
-  list.ind = 1
-
   nClust=detectCores(all.tests=FALSE,logical=TRUE)
   use.threads = min(nthreads, nClust)
   if(use.threads < nthreads){cat(paste("nthreads is greater than total threads available (", nClust, "). Using max threads available.\n"))}
   c1<-makeCluster(min(nthreads, nClust))
   #register said core
   registerDoParallel(c1)
-  gamfits.list = foreach(i.gamfit = 1:nrow(gam.args),
-                         .combine = list
+  gamfits.df = foreach(i.gamfit = 1:nrow(gam.args),
+                         .combine = rbind,
+                         .packages = c("butterflyGamSims")
   )%dopar%{
     yearly.list = list()
     sim.ind = 1
@@ -133,9 +130,7 @@ gam_fitall_par = function(timeseries,
     return(yearly.df)
   }
   stopCluster(c1)
-  print(lapply(gamfits.list))
   gam.args$gam.id = 1:nrow(gam.args)
-  gamfits.df = do.call(rbind, gamfits.list)
   return(list(yearly.estimates = gamfits.df, gam.args = gam.args))
 }
 

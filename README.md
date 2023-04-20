@@ -15,6 +15,15 @@ devtools::install_github("cbedwards/butterflyGamSims")
 
 ## Description
 
+### Update Notes
+
+As of 4/20/23, **butterflyGamSims** now supports parallel processing
+using the doPar workflow. This has been implemented for the gam-fitting
+steps (which are by far the most time-consuming). The optional
+`nthreads` argument can be set to the number of threads desired to
+initiate parallel processing. At default (`nthreads = NULL`), code will
+continue to use serial processing as before.
+
 ### Motivation
 
 In ecology and in conservation biology, understanding the population
