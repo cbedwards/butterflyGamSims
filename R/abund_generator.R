@@ -30,7 +30,7 @@
 #' plot(x = 1:10, y = out)
 abund_generator = function(years, abund.type, ...){
   stopifnot(is.numeric(years),
-            abund.type %in% c("exp", "rlnorm"))
+            abund.type %in% c("exp", "rlnorm", "both"))
   switch(abund.type,
          exp = abund_generator_exp(years, ...),
          rlnorm = abund_generator_rlnorm(years, ...),
