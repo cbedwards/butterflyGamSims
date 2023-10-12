@@ -18,7 +18,8 @@ this criterion.}
 }
 \value{
 1-row data frame with linear trends across years for each metric. For abundance,
-\code{growth.rate} is the trend in log abundance across years. \verb{$nyears} is the number of unique
+\code{growth.rate} is the trend in log abundance across years. \code{gr.ci.025} and \code{gr.ci.975} give the 95\% confidence
+limits for the estimated growth rate.  \verb{$nyears} is the number of unique
 years provided.
 }
 \description{

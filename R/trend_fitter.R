@@ -11,7 +11,8 @@
 #' this criterion.
 #'
 #' @return 1-row data frame with linear trends across years for each metric. For abundance,
-#' `growth.rate` is the trend in log abundance across years. `$nyears` is the number of unique
+#' `growth.rate` is the trend in log abundance across years. `gr.ci.025` and `gr.ci.975` give the 95% confidence
+#' limits for the estimated growth rate.  `$nyears` is the number of unique
 #' years provided.
 #' @export
 #'
@@ -46,13 +47,17 @@ trend_fitter = function(dat.filtered,
                        fp = -999)
   res.cur$nyears = length(unique(dat.filtered$years))
   if(res.cur$nyears< nyear.min){
-    res.cur$growth.rate = res.cur$onset = res.cur$median = res.cur$end = res.cur$fp = NA
+    res.cur$growth.rate = res.cur$gr.ci.025 = res.cur$gr.ci.975 =
+      res.cur$onset = res.cur$median = res.cur$end = res.cur$fp = NA
   }else{
 
     ## abundance trend (log)
     dat.filtered$logabund=log(dat.filtered$abund+1)
     out = stats::lm(logabund ~ years, data=dat.filtered)
     res.cur$growth.rate = stats::coef(out)[2]
+    ci = stats::confint(out)
+    res.cur$gr.ci.025 = ci[2,1]
+    res.cur$gr.ci.925 = ci[2,2]
 
     # trend in median date
     out = stats::lm(median ~ years, data=dat.filtered)
