@@ -69,7 +69,7 @@ timeseries_examples = function(years,
                                     activity.type = activity.type,
                                     sample.type = sample.type,
                                     ...)
-  gp = ggplot2::ggplot(data = dat, aes_string(x = "doy", y = "act"))+
+ ggplot2::ggplot(data = dat, aes_string(x = "doy", y = "act"))+
     ggplot2::geom_point(shape = 1, col = 'blue')+
     ggplot2::geom_point(aes_string(y = "count"))+
     ggplot2::geom_line(data = dat.detail)+
