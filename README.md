@@ -24,6 +24,10 @@ steps (which are by far the most time-consuming). The optional
 initiate parallel processing. At default (`nthreads = NULL`), code will
 continue to use serial processing as before.
 
+As of 10/12/23, **butterflyGamSims** now supports populations with
+exponential growth / decline *and* lognormal stochasticity (implemented
+as process error).
+
 ### Motivation
 
 In ecology and in conservation biology, understanding the population
@@ -128,10 +132,10 @@ estimated trends.
 Because **butterflyGamSims** necessarily simulates butterfly time series
 data, the time-series simulation function `timeseries_sim()` may be
 helpful for other projects (IE simulated data for teaching/training,
-other methods-testing projects). Note that `timeseries_sim()` returns a
-set of simulated time series; depending on your needs,`timeseries_gen()`
-(which saves the time-series to a .csv file instead) may be more
-helpful.
+testing monitoring schemes or other analysis methods). Note that
+`timeseries_sim()` returns a set of simulated time series; depending on
+your needs,`timeseries_gen()` (which saves the time-series to a .csv
+file instead) may be more helpful.
 
 For visualizing simulated time-series and associated fitted GAM models,
 `timeseries_examples()` and `fit_plotter()` may be helpful. As a simple

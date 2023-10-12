@@ -31,6 +31,8 @@ devtools::install_github("cbedwards/butterflyGamSims")
 
 As of 4/20/23, **butterflyGamSims** now supports parallel processing using the doPar workflow. This has been implemented for the gam-fitting steps (which are by far the most time-consuming). The optional `nthreads` argument can be set to the number of threads desired to initiate parallel processing. At default (`nthreads = NULL`), code will continue to use serial processing as before.
 
+As of 10/12/23, **butterflyGamSims** now supports populations with exponential growth / decline *and* lognormal stochasticity (implemented as process error). 
+
 ### Motivation
 
 In ecology and in conservation biology, understanding the population trends and timing of activity ("phenology") for insects is an ongoing interest / concern. Particularly in the context of climate change, ecologists are interested in identifying trends in phenology (IE populations shifting to become
@@ -44,8 +46,6 @@ There are a number of tools for translating these repeated transect counts to es
 
 **Long story short**, we need to be able to test how reliable different variations of GAM models are, and if there are rules for excluding years with insufficient data that balance our need for reliable estimates of abundance and phenology with our desire not to exclude years or species with sparse data. **butterflyGamSims** simulates transect data for biologically reasonable butterfly activity with reasonable sampling variation, then fits the data with the specified GAM model and estimates trends in abundance and phenology across years, using the specified rules for excluding potential problem years. Because the data is simulated, we know what the *true* trends in the population are, so we can evaluate how well our methods worked. 
 
-
-
 ### Using this package
 
 My primary motivation for creating this package was to compare estimated and real trends in abundance and phenology for a range of GAM approaches and data censoring options to identify potential biases when fitting real data. In particular, in exploring real data, I found that for sufficiently sparse data in which abundance declined across a time series, apparent trends in phenology became wildly unreliable without some rule for removing years with insufficient data. This package allows systematic exploration of
@@ -57,7 +57,7 @@ the GAM-fitting parameters, and the data filtering protocol. See `?butterfly_gam
 
 Because **butterflyGamSims** necessarily simulates butterfly time series data, the 
 time-series simulation function `timeseries_sim()` may be helpful for other projects (IE
-simulated data for teaching/training, other methods-testing projects).
+simulated data for teaching/training, testing monitoring schemes or other analysis methods).
 Note that `timeseries_sim()` returns a set of simulated time series; depending on your needs,`timeseries_gen()` (which saves the time-series to a .csv file instead) may be more helpful.
 
 For visualizing simulated time-series and associated fitted GAM models, `timeseries_examples()` and `fit_plotter()` may be helpful. As a simple example, 

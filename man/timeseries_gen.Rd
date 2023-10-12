@@ -28,7 +28,8 @@ timeseries_gen(
 \item{doy.samples}{Numeric vector of day of years for which to simulate censusing.}
 
 \item{abund.type}{What type of variation in abundance to model. Currently supported: deterministic
-exponential growth (\code{"exp"}), log normal random draws (\code{"rlnorm"}).}
+exponential growth (\code{"exp"}), log normal random draws (\code{"rlnorm"}), exponential growth with log normal random draws
+in the form of process error (\code{"both"}).}
 
 \item{activity.type}{What functional form to use for the underlying activity curves?
 Currently supports the Zonneveld model (\code{"zon"}), #' a simple gaussian activity curve (\code{"gauss"}),

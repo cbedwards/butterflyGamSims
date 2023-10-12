@@ -4,6 +4,7 @@
 \alias{abund_generator}
 \alias{abund_generator_exp}
 \alias{abund_generator_rlnorm}
+\alias{abund_generator_both}
 \title{Determine yearly abundance index}
 \usage{
 abund_generator(years, abund.type, ...)
@@ -11,6 +12,8 @@ abund_generator(years, abund.type, ...)
 abund_generator_exp(years, ...)
 
 abund_generator_rlnorm(years, ...)
+
+abund_generator_both(years, ...)
 }
 \arguments{
 \item{years}{Years to generate abundance index for as a numeric vector.
@@ -19,20 +22,23 @@ so c(1,2,10) will give different results than c(1,2,3). For \code{abund_generato
 each year's value is IID.}
 
 \item{abund.type}{What type of variation in abundance to model. Currently supported: deterministic
-exponential growth (\code{"exp"}), log normal random draws (\code{"rlnorm"}).}
+exponential growth (\code{"exp"}), log normal random draws (\code{"rlnorm"}), exponential growth with log normal random draws
+in the form of process error (\code{"both"}).}
 
 \item{...}{For \code{abund.type == "exp"}, needs \code{growth.rate} (yearly population growth rate) and \code{init.size} (abundance index in the first year).
 For our purposes, recommend a negative growth rate. For \code{abund.type == "rlnorm"},
-needs \code{meanlog} and \code{sdlog}, the mean and standard deviation of the normal distribution on a log scale.}
+needs \code{meanlog} and \code{sdlog}, the mean and standard deviation of the normal distribution on a log scale.
+For \code{abund.type == "both"}, needs \code{growth.rate}, \code{init.size} and \code{sdlog}.}
 }
 \value{
 Numeric vector of abundance indices for each year.
 }
 \description{
 From a sequence of years, generates abundance indices to feed into activity_generator().
-Currently two methods are implemented. \code{abund_generator_exp()} produces deterministic
-exponential decline or growth from an initial abundnace. \code{abund_generator_rlnorm()} produces
-abundances from a lognormal distribution.
+Currently three methods are implemented. \code{abund_generator_exp()} produces deterministic
+exponential decline or growth from an initial abundance. \code{abund_generator_rlnorm()} produces
+abundances from a lognormal distribution. \code{abund_generator_both()} produces exponential decline with
+lognormally distributed process error.
 }
 \examples{
 out = abund_generator(years = 1:10, abund.type = "exp", growth.rate = -0.1, init.size=500)
