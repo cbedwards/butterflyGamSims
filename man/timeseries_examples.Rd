@@ -41,7 +41,9 @@ Currently supported: Poisson (\code{"pois"}), negative binomial (\code{"nb"}), a
 ggplot object
 }
 \description{
-Plot example timeseries
+Show actual activity curve (black line), expected number of butterflies on days of sampling (hollow blue circles),
+and sampled numbers of butterflies incorporating sampling variation (black points). In full simulations,
+black points are the simulated samples that are fit with smoothing splines.
 }
 \details{
 For all the additional arguments needed for the various component functions,

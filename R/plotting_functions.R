@@ -1,5 +1,9 @@
 #' Plot example timeseries
 #'
+#' Show actual activity curve (black line), expected number of butterflies on days of sampling (hollow blue circles),
+#' and sampled numbers of butterflies incorporating sampling variation (black points). In full simulations,
+#' black points are the simulated samples that are fit with smoothing splines.
+#'
 #' @param years Numeric vector of years for which which to simulate data
 #' @param doy.samples Numeric vector of day of years for which to simulate censusing.
 #' @inheritParams abund_generator
@@ -37,19 +41,35 @@ timeseries_examples = function(years,
                                ...){
   stopifnot(is.numeric(xlim),
             length(xlim) == 2)
+  if(abund.type == "both"){plot.simple = TRUE}
   dat = timeseries_generator(years = years,
                              doy.samples = doy.samples,
                              abund.type = abund.type,
                              activity.type = activity.type,
                              sample.type = sample.type,
                              ...)
+  ## modifying to handle variability
+  dat.detail = expand.grid(years = years,
+                           doy = seq(xlim[1],xlim[2], by = .1))
+  abund.merge = unique(dat[, c("years", "abund.true")])
+  names(abund.merge) = c("years", "abund")
+  dat.detail = dplyr::inner_join(dat.detail, abund.merge, by = "years")
+  dat.detail$act = with(dat.detail,
+                        activity_gen(abund.vec = abund,
+                                     doy = doy,
+                                     activity.type = activity.type,
+                                     ...))
+
+
+
+
   dat.detail = timeseries_generator(years = years,
                                     doy.samples = seq(xlim[1],xlim[2], by = .1),
                                     abund.type = abund.type,
                                     activity.type = activity.type,
                                     sample.type = sample.type,
                                     ...)
-  ggplot2::ggplot(data = dat, aes_string(x = "doy", y = "act"))+
+  gp = ggplot2::ggplot(data = dat, aes_string(x = "doy", y = "act"))+
     ggplot2::geom_point(shape = 1, col = 'blue')+
     ggplot2::geom_point(aes_string(y = "count"))+
     ggplot2::geom_line(data = dat.detail)+
@@ -106,12 +126,12 @@ fit_plotter = function(dat.timeseries,
   gfig = ggplot2::ggplot(data = activity.curve,
                          aes_string(x = "doy"))+
     ggplot2::geom_line(data = activity.curve,
-              aes_string(y = "act"))+
+                       aes_string(y = "act"))+
     ggplot2::geom_point(data = dat.fitted,
-               aes_string(y = "count"),
-               shape = 1)+
+                        aes_string(y = "count"),
+                        shape = 1)+
     ggplot2::geom_point(data = dat.timeseries,
-               aes_string(y = "count"))+
+                        aes_string(y = "count"))+
     ggplot2::facet_wrap(~years)+
     ggplot2::xlab("day of year")+
     ggplot2::ylab("Activity or count")
