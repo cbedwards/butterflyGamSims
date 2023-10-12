@@ -57,7 +57,7 @@ trend_fitter = function(dat.filtered,
     res.cur$growth.rate = stats::coef(out)[2]
     ci = stats::confint(out)
     res.cur$gr.ci.025 = ci[2,1]
-    res.cur$gr.ci.925 = ci[2,2]
+    res.cur$gr.ci.975 = ci[2,2]
 
     # trend in median date
     out = stats::lm(median ~ years, data=dat.filtered)
