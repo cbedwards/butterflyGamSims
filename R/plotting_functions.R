@@ -59,16 +59,6 @@ timeseries_examples = function(years,
                                      doy = doy,
                                      activity.type = activity.type,
                                      ...))
-
-
-
-
-  dat.detail = timeseries_generator(years = years,
-                                    doy.samples = seq(xlim[1],xlim[2], by = .1),
-                                    abund.type = abund.type,
-                                    activity.type = activity.type,
-                                    sample.type = sample.type,
-                                    ...)
  ggplot2::ggplot(data = dat, aes_string(x = "doy", y = "act"))+
     ggplot2::geom_point(shape = 1, col = 'blue')+
     ggplot2::geom_point(aes_string(y = "count"))+
